@@ -5,7 +5,7 @@ import java.util.*;
 
 public class Admin {
 
-	private String mid; //회원고유번호(fk)
+	private String mid; //회원고유번호(pk)
 	private LocalDate adminRegDate; //관리자 등록일
 	
 	public Admin() {

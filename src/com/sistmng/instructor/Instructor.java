@@ -2,7 +2,7 @@ package com.sistmng.instructor;
 
 public class Instructor {
 
-	private String mid; //회원고유번호(fk)
+	private String mid; //회원고유번호(pk)
 	private String instructorRegDate; //강사등록일
 	
 	public Instructor() {
