@@ -10,7 +10,7 @@ public class Student {
 	//수강생 등록일
 	private LocalDate studentRegDate;
 	//과정코드(pk), 과정명, 과정수강횟수
-	private String courseCode, courserName;
+	private String courseCode, courseName;
 	private int courseNumber;
 	//개설과정코드(pk), 강의실고유번호(pk), 강의실명, 정원
 	private String openCourseCode, classCode, className, classQuota;
@@ -102,12 +102,12 @@ public class Student {
 		this.courseCode = courseCode;
 	}
 
-	public String getCourserName() {
-		return courserName;
+	public String getCourseName() {
+		return courseName;
 	}
 
-	public void setCourserName(String courserName) {
-		this.courserName = courserName;
+	public void setCourseName(String courseName) {
+		this.courseName = courseName;
 	}
 
 	public String getOpenCourseCode() {

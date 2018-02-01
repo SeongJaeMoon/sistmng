@@ -67,12 +67,11 @@ public class StudentDAO {
 	 	AND st.mid = sh.mid
 	 	AND o.classCode = cl.classCode
 	 	AND d.mid = st.mid
-	 	AND d.openCoCode = d.openCoCode
-		mid = ? 
+	 	AND d.openCoCode = d.openCoCode 
 		 */
 		
 		//과정코드 / 과정명 / 시작일 / 종료일 / 강의실 /수료
-		String sql = "SELECT course_, courseName, openCoCode, openCoCloseDate, classCode WHERE mid = ?";
+		String sql = "SELECT course_, courseName, openCoCode, openCoCloseDate, classCode FROM studentHistroyView WHERE mid = ?";
 		try {
 			conn = SQLConnection.connect();
 			pstmt = conn.prepareStatement(sql);
@@ -104,11 +103,20 @@ public class StudentDAO {
 		return result;
 	}
 
+	//과
 	private List<Student> menu_21(String openCoCode){
 		List<Student>result = new ArrayList<Student>();
 		Connection conn = null;
 		PreparedStatement pstmt = null;
-		String sql = "";
+		/*
+		CREATE OR REPLACE VIEW studentCourseView
+		AS
+		SELECT openCoCode, subjectName, openSubStartDate, openSubCloseDate, bookName, name, altDistribution, wriDistribution, pracDistribution, attendanceScore, writingScore, practiceScore, testDate, testFile
+		FROM
+		WHERE 
+		
+		 */
+		String sql = "SELECT FROM WHERE";
 		try {
 			conn = SQLConnection.connect();
 			pstmt = conn.prepareStatement(sql);
@@ -118,7 +126,7 @@ public class StudentDAO {
 			while(rs.next()) {
 				
 			}
-				
+			
 			rs.close();
 		} catch (SQLException se) {
 			se.printStackTrace();

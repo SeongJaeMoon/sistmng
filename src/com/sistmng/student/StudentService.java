@@ -18,9 +18,21 @@ public class StudentService {
 	}
 	
 	public void menu_2(Scanner sc) {
+		List<Student> studentList = this.dao.menu_2(Current.getInstance().getCurrent());
 		System.out.println("성적을 조회합니다.");
+		System.out.println("------------------------------------------------------------------------------------------------------");
 		System.out.println("과정코드 / 과정명 / 시작일 / 종료일 / 강의실 /수료");
+		System.out.println("------------------------------------------------------------------------------------------------------");
+		for(Student s : studentList) {
+			System.out.printf("%s / %s / %s / %s / %s / %s", s.getOpenCourseCode(), s.getCourseName(), s.getOpenCourseStartDate(), s.getOpenCourseCloseDate(), s.getClassName(), s.getCompletionCheck());
+		}
+		System.out.println("------------------------------------------------------------------------------------------------------");
 		System.out.println("1.과정 상세보기 0.나가기");
+		int input = sc.nextInt();
+		switch(input) {
+		case 1:this.menu_21(sc);break;
+		case 0:break;
+		}
 	}
 	
 	public void menu_21(Scanner sc) {
