@@ -1,5 +1,5 @@
 package com.sistmng;
 
-public class Login {
+public class LoginDAO {
 
 }

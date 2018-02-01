@@ -1,16 +1,17 @@
 package com.sistmng.student;
 
 import java.time.LocalDate;
-import java.util.*;
+
 
 public class Student {
 
-	//회원고유번호(pk)
-	private String mid;
+	//회원고유번호(pk), 이름, 주민번호 뒷 자리, 전화번호
+	private String mid, name_, ssn, phone;
 	//수강생 등록일
 	private LocalDate studentRegDate;
-	//과정코드(pk), 과정명
+	//과정코드(pk), 과정명, 과정수강횟수
 	private String courseCode, courserName;
+	private int courseNumber;
 	//개설과정코드(pk), 강의실고유번호(pk), 강의실명, 정원
 	private String openCourseCode, classCode, className, classQuota;
 	//개설 과정 기간 시작일, 개설 과정 기간 종료일
@@ -29,9 +30,52 @@ public class Student {
 	//성적코드(pk), 출결점수, 필기점수, 실기점수
 	private String scoreCode;
 	private int attendanceScore, writingScore, practiceScore;
+	//수료여부 (수료, 중도탈락, 수강중)
+	private String completionCheck;
 	
 	public Student() {
 		
+	}
+	
+	public String getCompletionCheck() {
+		return completionCheck;
+	}
+
+	public void setCompletionCheck(String completionCheck) {
+		this.completionCheck = completionCheck;
+	}
+
+	public int getCourseNumber() {
+		return courseNumber;
+	}
+
+	public void setCourseNumber(int courseNumber) {
+		this.courseNumber = courseNumber;
+	}
+
+
+	public String getName_() {
+		return name_;
+	}
+
+	public void setName_(String name_) {
+		this.name_ = name_;
+	}
+
+	public String getSsn() {
+		return ssn;
+	}
+
+	public void setSsn(String ssn) {
+		this.ssn = ssn;
+	}
+
+	public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
 	}
 
 	public String getMid() {
