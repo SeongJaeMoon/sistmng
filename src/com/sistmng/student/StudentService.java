@@ -28,6 +28,7 @@ public class StudentService {
 		}
 		System.out.println("------------------------------------------------------------------------------------------------------");
 		System.out.println("1.과정 상세보기 0.나가기");
+		System.out.print("선택 > ");
 		int input = sc.nextInt();
 		switch(input) {
 		case 1:this.menu_21(sc);break;
@@ -36,7 +37,17 @@ public class StudentService {
 	}
 	
 	public void menu_21(Scanner sc) {
-		
+		System.out.println("과정코드 > ");
+		String openCoCode = sc.next();
+		List<Student>studentList = this.dao.menu_21(openCoCode);
+		System.out.println("-----------------------------------------------------------------------------------------------------------------");
+		System.out.println("과목코드 / 과목명 / 시작일 / 종료일 / 교재명 / 강사명 / 출결배점 / 출결점수 / 실기배점 / 실기점수 / 필기배점 / 필기점수 / 시험날짜 /시험문제");
+		System.out.println("-----------------------------------------------------------------------------------------------------------------");
+		for(Student s : studentList) {
+			System.out.printf("%s / %s / %s / %s / %s / %s / %s / %s / %s / %s / %s / %s / %s", 
+					s.getOpenSubCode(), s.getSubjectName(), s.getOpenSubStartDate(), s.getOpenSubCloseDate(), s.getBookName(), s.getName_(), s.getattDistribution(), s.getAttendanceScore(), s.getwriDistribution(), s.getWritingScore(), s.getpracDistribution(), s.getPracticeScore());
+		}
 		System.out.println("0.나가기");
+		
 	}
 }

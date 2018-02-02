@@ -16,6 +16,9 @@ public class Student {
 	private String openCourseCode, classCode, className, classQuota;
 	//개설 과정 기간 시작일, 개설 과정 기간 종료일
 	private LocalDate openCourseStartDate, openCourseCloseDate;
+	//개설과목코드(pk), 교재번호, 교재명, 개설 과목 기간 시작일, 개설 과정 기간 종료일
+	private String openSubCode, bookCode, bookName;
+	private LocalDate openSubStartDate, openSubCloseDate;
 	//과목코드(pk), 과목명
 	private String subjectCode, subjectName; 
 	//탈락코드(pk), 탈락날짜
@@ -26,7 +29,7 @@ public class Student {
 	private LocalDate testDate;
 	//배점코드(pk), 출석배점, 필기배점, 실기배점
 	private String distributionCode;
-	private int attendanceDistribution, writingDistribution, practiceDistribution;
+	private int attDistribution, wriDistribution, pracDistribution;
 	//성적코드(pk), 출결점수, 필기점수, 실기점수
 	private String scoreCode;
 	private int attendanceScore, writingScore, practiceScore;
@@ -37,6 +40,49 @@ public class Student {
 		
 	}
 	
+	
+	
+	public String getBookName() {
+		return bookName;
+	}
+
+	public void setBookName(String bookName) {
+		this.bookName = bookName;
+	}
+
+	public String getOpenSubCode() {
+		return openSubCode;
+	}
+
+	public void setOpenSubCode(String openSubCode) {
+		this.openSubCode = openSubCode;
+	}
+
+	public String getBookCode() {
+		return bookCode;
+	}
+
+	public void setBookCode(String bookCode) {
+		this.bookCode = bookCode;
+	}
+
+	public LocalDate getOpenSubStartDate() {
+		return openSubStartDate;
+	}
+
+	public void setOpenSubStartDate(LocalDate openSubStartDate) {
+		this.openSubStartDate = openSubStartDate;
+	}
+
+
+	public LocalDate getOpenSubCloseDate() {
+		return openSubCloseDate;
+	}
+
+	public void setOpenSubCloseDate(LocalDate openSubCloseDate) {
+		this.openSubCloseDate = openSubCloseDate;
+	}
+
 	public String getCompletionCheck() {
 		return completionCheck;
 	}
@@ -222,28 +268,28 @@ public class Student {
 		this.distributionCode = distributionCode;
 	}
 
-	public int getAttendanceDistribution() {
-		return attendanceDistribution;
+	public int getattDistribution() {
+		return attDistribution;
 	}
 
-	public void setAttendanceDistribution(int attendanceDistribution) {
-		this.attendanceDistribution = attendanceDistribution;
+	public void setattDistribution(int attDistribution) {
+		this.attDistribution = attDistribution;
 	}
 
-	public int getWritingDistribution() {
-		return writingDistribution;
+	public int getwriDistribution() {
+		return wriDistribution;
 	}
 
-	public void setWritingDistribution(int writingDistribution) {
-		this.writingDistribution = writingDistribution;
+	public void setwriDistribution(int wriDistribution) {
+		this.wriDistribution = wriDistribution;
 	}
 
-	public int getPracticeDistribution() {
-		return practiceDistribution;
+	public int getpracDistribution() {
+		return pracDistribution;
 	}
 
-	public void setPracticeDistribution(int practiceDistribution) {
-		this.practiceDistribution = practiceDistribution;
+	public void setpracDistribution(int pracDistribution) {
+		this.pracDistribution = pracDistribution;
 	}
 
 	public String getScoreCode() {
