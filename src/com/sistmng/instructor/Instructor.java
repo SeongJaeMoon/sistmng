@@ -26,7 +26,7 @@ public class Instructor {
 	private int classQuota;
 
 	// 개설 과정 기간 시작일, 개설 과정 기간 종료일
-	private LocalDate openCourseStartDate, openCourseCloseDate;
+	private LocalDate openCoStartDate, openCoCloseDate;
 	
 	
 	
@@ -168,21 +168,6 @@ public class Instructor {
 		this.classQuota = classQuota;
 	}
 
-	public LocalDate getOpenCourseStartDate() {
-		return openCourseStartDate;
-	}
-
-	public void setOpenCourseStartDate(LocalDate openCourseStartDate) {
-		this.openCourseStartDate = openCourseStartDate;
-	}
-
-	public LocalDate getOpenCourseCloseDate() {
-		return openCourseCloseDate;
-	}
-
-	public void setOpenCourseCloseDate(LocalDate openCourseCloseDate) {
-		this.openCourseCloseDate = openCourseCloseDate;
-	}
 
 	public String getSubjectCode() {
 		return subjectCode;
@@ -378,6 +363,22 @@ public class Instructor {
 
 	public Instructor() {
 
+	}
+
+	public LocalDate getOpenCoStartDate() {
+		return openCoStartDate;
+	}
+
+	public void setOpenCoStartDate(LocalDate openCoStartDate) {
+		this.openCoStartDate = openCoStartDate;
+	}
+
+	public LocalDate getOpenCoCloseDate() {
+		return openCoCloseDate;
+	}
+
+	public void setOpenCoCloseDate(LocalDate openCoCloseDate) {
+		this.openCoCloseDate = openCoCloseDate;
 	}
 
 }
