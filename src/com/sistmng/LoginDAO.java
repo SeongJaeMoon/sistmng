@@ -11,7 +11,7 @@ public class LoginDAO {
 		Member member = null;
 		Connection conn = null;
 		PreparedStatement pstmt = null;
-		String sql = "SELECT mid, name_, ssn, memberStauts FROM member_ WHERE name_ = ? AND ssn = ?";
+		String sql = "SELECT mid, name_, ssn, memberStatus FROM member_ WHERE name_ = ? AND ssn = ?";
 		try {
 			conn = SQLConnection.connect();
 			pstmt = conn.prepareStatement(sql);
@@ -26,7 +26,7 @@ public class LoginDAO {
 				String name_ = rs.getString("name_");
 				String ssn = rs.getString("ssn");
 				String memberStatus = rs.getString("memberStatus");
-				
+				member = new Member();
 				member.setMid(mid);
 				member.setName(name_);
 				member.setSsn(ssn);

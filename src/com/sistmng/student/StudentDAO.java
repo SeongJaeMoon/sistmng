@@ -13,14 +13,14 @@ public class StudentDAO {
 		Student student = new Student();
 		Connection conn = null;
 		PreparedStatement pstmt = null;
-		String sql = "SELECT name_, ssn, phone, FROM member_ WHERE mid = ?";
+		String sql = "SELECT name_, ssn, phone FROM member_ WHERE mid = ?";
 		try {
 			conn = SQLConnection.connect();
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, mid);
 			
 			ResultSet rs = pstmt.executeQuery();
-			
+			while(rs.next()) {
 				String name_ = rs.getString("name_");
 				String ssn = rs.getString("ssn");
 				String phone = rs.getString("phone");
@@ -28,7 +28,7 @@ public class StudentDAO {
 				student.setName_(name_);
 				student.setSsn(ssn);
 				student.setPhone(phone);
-
+			}
 				//수강 횟수 계산 필요
 				student.setCourseNumber(this.getCourseNumber(mid));
 				
@@ -62,17 +62,18 @@ public class StudentDAO {
 		/*
 		CREATE OR REPLACE VIEW studentHistoryView
 		AS
-		SELECT course_, courseName, openCoCode, openCoCloseDate, className, failureCode
-		FROM openCourse_ o, studentHistory_ sh, dropOut_ d, student st, class_ cl
+		-- 과정코드 / 과정명 / 시작일 / 종료일 / 강의실 /수료
+        SELECT o.courseCode, co.courseName, o.openCoStartDate, o.openCoCloseDate, cl.className, d.failureDate, sh.mid
+		FROM openCourse_ o, studentHistory_ sh, dropOut_ d, class_ cl, course_ co
 		WHERE o.openCoCode = sh.openCoCode
-	 	AND st.mid = sh.mid
 	 	AND o.classCode = cl.classCode
-	 	AND d.mid = st.mid
-	 	AND d.openCoCode = d.openCoCode 
+        AND d.mid(+) = sh.mid
+	 	AND d.openCoCode(+) = sh.openCoCode
+        AND co.courseCode = o.courseCode;
 		 */
 		
 		//과정코드 / 과정명 / 시작일 / 종료일 / 강의실 /수료
-		String sql = "SELECT course_, courseName, openCoCode, openCoCloseDate, classCode FROM studentHistroyView WHERE mid = ?";
+		String sql = "SELECT courseCode, courseName, openCoStartDate, openCoCloseDate, className, failureDate FROM studentHistoryView WHERE mid = ?";
 		try {
 			conn = SQLConnection.connect();
 			pstmt = conn.prepareStatement(sql);
@@ -80,7 +81,22 @@ public class StudentDAO {
 			
 			ResultSet rs = pstmt.executeQuery();
 			while(rs.next()) {
+				String courseCode = rs.getString("courseCode");
+				String courseName = rs.getString("courseName");
+				LocalDate openCoStartDate = rs.getDate("openCoStartDate").toLocalDate();
+				LocalDate openCoCloseDate = rs.getDate("openCoCloseDate").toLocalDate();
+				String className = rs.getString("className");
+				LocalDate failureDate = rs.getDate("failureDate").toLocalDate();
 				
+				Student st = new Student();
+				st.setCourseCode(courseCode);
+				st.setCourseName(courseName);
+				st.setOpenCourseStartDate(openCoStartDate);
+				st.setOpenCourseCloseDate(openCoCloseDate);
+				st.setClassName(className);
+				st.setFailureDate(failureDate);
+				
+				result.add(st);
 			}
 				
 			rs.close();

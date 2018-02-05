@@ -13,16 +13,16 @@ public class LoginService {
 	InstructorMain in = new InstructorMain();
 	AdminMain ad = new AdminMain();
 	
-	public void login(Scanner sc){
-		System.out.println("==================================");
-		System.out.println("성적 처리 시스템");
-		System.out.println("==================================");
-		System.out.println("1.로그인 0.종료");
-		System.out.print("선택 > ");	
-		this.login_menu(sc);
-	}
+//	public void login(Scanner sc){
+//		System.out.println("==================================");
+//		System.out.println("성적 처리 시스템");
+//		System.out.println("==================================");
+//		System.out.println("1.로그인 0.종료");
+//		System.out.print("선택 > ");	
+//		this.login_menu(sc);
+//	}
 	
-	private void login_menu(Scanner sc) {
+	public void login(Scanner sc) {
 		System.out.print("이름 >");
 		String name_ = sc.next();
 		System.out.print("비밀번호(주민번호 뒤 7자리) >");
@@ -30,13 +30,14 @@ public class LoginService {
 		Member m = new Member();
 		m.setName(name_);
 		m.setSsn(ssn);
-		m = this.dao.login_menu(m);
-		if(m!=null) {
+		Member mem = this.dao.login_menu(m);
+		if(mem!=null) {
+			
 			Current current = Current.getInstance();
-			current.setCurrent(m.getMid());
-			current.setStatus(m.getMemberStatus());
+			current.setCurrent(mem.getMid());
+			current.setStatus(mem.getMemberStatus());
+			System.out.printf("(%s)님이(%s)로 로그인 중 입니다.%n", mem.getName(), mem.getMemberStatus());
 			this.login_menu_1(current.getStatus(), sc);
-			System.out.printf("(%s)님이(%s)로 로그인 중 입니다.", m.getName(), m.getMemberStatus());
 		}else {
 			System.out.println("존재하지 않는 회원입니다. 확인해주세요.");
 		}
