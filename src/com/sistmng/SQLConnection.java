@@ -6,9 +6,9 @@ import java.sql.SQLException;
 
 public class SQLConnection {
 	private static final String JDBC_DRIVER = "oracle.jdbc.driver.OracleDriver";
-	private static final String DB_URL = "jdbc:oracle:thin:@211.63.89.1521:xe";
+	private static final String DB_URL = "jdbc:oracle:thin:@127.0.0.1:xe";
 	
-	private static final String USER = "test_moon"; //아이디
+	private static final String USER = "moonseongjae"; //아이디
 	private static final String PASS = "1234"; //비밀번호
 	
 	private static Connection conn;

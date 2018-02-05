@@ -1,12 +1,9 @@
 package com.sistmng.student;
 
 import java.util.*;
-
 import com.sistmng.SQLConnection;
-
 import java.sql.*;
 import java.time.LocalDate;
-import java.util.*;
 
 public class StudentDAO {
 
@@ -194,7 +191,7 @@ public class StudentDAO {
 		int result = 0;
 		Connection conn = null;
 		PreparedStatement pstmt = null;
-		String sql = "SELECT COUNT(*) AS mid FROM studentHistory_ WHERE = ?";
+		String sql = "SELECT COUNT(*) AS mid FROM studentHistory_ WHERE mid = ?";
 		try {
 			conn = SQLConnection.connect();
 			pstmt = conn.prepareStatement(sql);
