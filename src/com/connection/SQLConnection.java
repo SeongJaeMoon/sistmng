@@ -7,11 +7,11 @@ public class SQLConnection {
 
 	// JDBC driver name and database URL
 	private static final String JDBC_DRIVER = "oracle.jdbc.driver.OracleDriver";
-	private static final String DB_URL = "";
+	private static final String DB_URL = "jdbc:oracle:thin:@211.63.89.86:1521:xe";
 
 	// Database credentials
-	private static final String USER = "";
-	private static final String PASS = "";
+	private static final String USER = "kim";
+	private static final String PASS = "1234";
 
 	private static Connection conn;
 

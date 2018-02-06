@@ -6,12 +6,15 @@ public class Instructor {
 
 	// 회원고유번호(pk),회원구분, 이름, 주민번호, 전화번호, 회원등록일
 	private String mid, memberStatus, name_, ssn, phone;
+	
+	
+	private LocalDate studentRegDate;
 
 	// 강사 등록일
 	private LocalDate instructorRegDate;
 
 	// 과정코드(pk), 과정명
-	private String courseCode, courserName;
+	private String courseCode, courseName;
 	
 	
 	
@@ -35,10 +38,10 @@ public class Instructor {
 	private String subjectCode, subjectName;
 
 	// 개설 과목(pk), 교재번호(fk))
-	private String openSubCode, bookCode;
+	private String openSubCode, bookCode, openSubSatus;
 
 	// 개설 과목 시작일, 개설 과목 종료일
-	private LocalDate openSubStartDate, openSubcloseDate;
+	private LocalDate openSubStartDate, openSubCloseDate;
 
 	// 교재명, 출판사명
 	private String bookName, bookPublisher;
@@ -61,8 +64,8 @@ public class Instructor {
 	// 성적코드(pk)
 	private String scoreCode;
 
-	// 성적 출결점수 ,필기점수, 실기점수, 총점 성적 등록인원
-	private int attendanceScore, writingScore, practiceScore, totalScore, stuHaveScore;
+	// 성적 출결점수 ,필기점수, 실기점수, 총점, 성적 등록인원
+	private int attendanceScore, writingScore, practiceScore, totalScore, numberOfStuHaveScore;
 
 	public String getMid() {
 		return mid;
@@ -120,13 +123,6 @@ public class Instructor {
 		this.courseCode = courseCode;
 	}
 
-	public String getCourserName() {
-		return courserName;
-	}
-
-	public void setCourserName(String courserName) {
-		this.courserName = courserName;
-	}
 
 	public String getClassCode() {
 		return classCode;
@@ -209,13 +205,6 @@ public class Instructor {
 		this.openSubStartDate = openSubStartDate;
 	}
 
-	public LocalDate getOpenSubcloseDate() {
-		return openSubcloseDate;
-	}
-
-	public void setOpenSubcloseDate(LocalDate openSubcloseDate) {
-		this.openSubcloseDate = openSubcloseDate;
-	}
 
 	public String getBookName() {
 		return bookName;
@@ -353,13 +342,6 @@ public class Instructor {
 		this.totalScore = totalScore;
 	}
 
-	public int getStuHaveScore() {
-		return stuHaveScore;
-	}
-
-	public void setStuHaveScore(int stuHaveScore) {
-		this.stuHaveScore = stuHaveScore;
-	}
 
 	public Instructor() {
 
@@ -379,6 +361,46 @@ public class Instructor {
 
 	public void setOpenCoCloseDate(LocalDate openCoCloseDate) {
 		this.openCoCloseDate = openCoCloseDate;
+	}
+
+	public String getOpenSubSatus() {
+		return openSubSatus;
+	}
+
+	public void setOpenSubSatus(String openSubSatus) {
+		this.openSubSatus = openSubSatus;
+	}
+
+	public int getNumberOfStuHaveScore() {
+		return numberOfStuHaveScore;
+	}
+
+	public void setNumberOfStuHaveScore(int numberOfStuHaveScore) {
+		this.numberOfStuHaveScore = numberOfStuHaveScore;
+	}
+
+	public String getCourseName() {
+		return courseName;
+	}
+
+	public void setCourseName(String courseName) {
+		this.courseName = courseName;
+	}
+
+	public LocalDate getOpenSubCloseDate() {
+		return openSubCloseDate;
+	}
+
+	public void setOpenSubCloseDate(LocalDate openSubCloseDate) {
+		this.openSubCloseDate = openSubCloseDate;
+	}
+
+	public LocalDate getStudentRegDate() {
+		return studentRegDate;
+	}
+
+	public void setStudentRegDate(LocalDate studentRegDate) {
+		this.studentRegDate = studentRegDate;
 	}
 
 }
