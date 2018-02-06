@@ -13,14 +13,6 @@ public class LoginService {
 	InstructorMain in = new InstructorMain();
 	AdminMain ad = new AdminMain();
 	
-//	public void login(Scanner sc){
-//		System.out.println("==================================");
-//		System.out.println("성적 처리 시스템");
-//		System.out.println("==================================");
-//		System.out.println("1.로그인 0.종료");
-//		System.out.print("선택 > ");	
-//		this.login_menu(sc);
-//	}
 	
 	public void login(Scanner sc) {
 		System.out.print("이름 >");
@@ -36,7 +28,7 @@ public class LoginService {
 			Current current = Current.getInstance();
 			current.setCurrent(mem.getMid());
 			current.setStatus(mem.getMemberStatus());
-			System.out.printf("(%s)님이(%s)로 로그인 중 입니다.%n", mem.getName(), mem.getMemberStatus());
+			System.out.printf("(%s)님이(%s)로 로그인 중 입니다.%n%n", mem.getName(), mem.getMemberStatus());
 			this.login_menu_1(current.getStatus(), sc);
 		}else {
 			System.out.println("존재하지 않는 회원입니다. 확인해주세요.");
