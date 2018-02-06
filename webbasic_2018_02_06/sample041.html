@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>SIST_쌍용교육센터</title>
+</head>
+<body>
+
+<!-- 
+
+HTML Input Types
+
+- <input> 태그에서 type="" 속성에 따라서 다양한 입력 폼 구성 가능.
+- 예를 들어, type="text"는 한 줄 입력이 가능한 입력 폼.
+- 주의) 입력시 긴 문자열 입력 가능하지만, 서버 전송시 데이터베이스 저장 가능한 범위의 문자열을 입력받는 경우가 일반적.
+- type="password" 속성은 입력시 입력되고 있는 글자가 다른 문자(*)로 대체되어서 표시된다.
+- type="submit" 속성은 버튼의 한 종류로써, 버튼 클릭 이벤트 발생시 서브밋 액션이 진행된다.
+- type="reset" 속성은 버튼의 한 종류로써, 현재 폼에 입력된 데이터를 모두 초기화 시킨다. 입력된 자료를 없애고 초기값으로 돌아간다. value="" 속성의 값이나, checked, selected 속성의 값으로 초기화된다.
+- type="radio" 속성은 여러개의 항목 중에서 한 개만 선택할 수 있도록 한다. 모든 라디오 항목은 name="식별자"를 동일하게 지정해야 한다. checked 속성(checked 또는 checked="checked") 표시된 경우 기본 선택된 상태로 표시된다. value="" 속성은 서브밋 액션 진행시 서버로 전송되는 데이터를 설정한다. 
+- type="checkbox" 속성은 여러개의 항목 중에서 한 개 또는 여러개 선택할 수 있도록 한다. 전체 취소도 가능. 서버 프로그램과 연동시 name="식별자"를 동일하게 작성한다. checked 속성(checked 또는 checked="checked") 표시된 경우 기본 선택된 상태로 표시된다. value="" 속성은 서브밋 액션 진행시 서버로 전송되는 데이터를 설정한다. 
+- type="button" 속성은 버튼의 한 종류로써, 버튼 모양만 지정할 때 사용. 사전 지정된 기능이 없다. 사용자 정의 기능(Javascript programming) 추가시 사용.
+
+-->
+
+
+<!-- 
+
+HTML5 Input Types
+
+- 주의) 구형 브라우저에서는 작동 불가.
+- type="color" 속성은 색상 선택 창을 보여주고, 선택한 색상값을 자동 입력해준다.
+- type="date" 속성은 날짜 선택 창을 보여주고, 선택한 날짜값을 자동 입력해준다. max="", min="" 속성으로 날짜의 범위 지정 가능.
+- type="email" 속성은 email 표현에 대한 정규표현식 검사를 자동으로 해준다. 검사는 서브밋 액션 진행시 실행된다. 잘못된 이메일 형식인 경우 서브밋 액션 취소된다.
+- type="number" 속성은 숫자 표현에 대한 정규표현식 검사를 자동으로 해준다. 검사는 서브밋 액션 진행시 실행된다. 잘못된 숫자 형식인 경우 서브밋 액션 취소된다.
+
+ -->
+
+
+<h2>Input Type Text</h2>
+<form>
+  First name(max 10):<br>
+  <input type="text" name="firstname"><br>
+  Last name(max 10):<br>
+  <input type="text" name="lastname">
+</form>
+
+<h2>Input Type Password</h2>
+<form>
+  User name:<br>
+  <input type="text" name="username"><br>
+  User password:<br>
+  <input type="password" name="psw">
+</form>
+
+<h2>Input Type Submit</h2>
+<form action="/action_page.php">
+  First name:<br>
+  <input type="text" name="firstname" value="Mickey"><br>
+  Last name:<br>
+  <input type="text" name="lastname" value="Mouse"><br><br> 
+  <input type="submit" value="Submit">
+</form>
+
+
+<h2>Input Type Reset</h2>
+<form action="/action_page.php">
+  First name:<br>
+  <input type="text" name="firstname" value="Mickey"><br>
+  Last name:<br>
+  <input type="text" name="lastname" value="Mouse"><br><br>
+  <input type="submit" value="Submit">
+  <input type="reset" value="Reset">
+</form>
+
+
+<h2>Input Type Radio</h2>
+<form>
+  <input type="radio" name="gender" value="male" checked> Male<br>
+  <input type="radio" name="gender" value="female"> Female<br>
+  <input type="radio" name="gender" value="other"> Other
+</form>
+
+
+<h2>Input Type Checkbox</h2>
+<form>
+  <input type="checkbox" name="vehicle1" value="Bike"> I have a bike<br>
+  <input type="checkbox" name="vehicle2" value="Car"> I have a car 
+</form>
+
+
+<h2>Input Type Button</h2>
+<input type="button" onclick="alert('Hello World!')" value="Click Me!">
+
+
+<hr>
+<h2>Input Type Color</h2>
+<form>
+  Select your favorite color:
+  <input type="color" name="favcolor">
+</form>
+
+<h2>Input Type Date</h2>
+<form>
+  Birthday:
+  <input type="date" name="bday">
+</form>
+
+
+<h2>Input Type Email</h2>
+<form>
+  E-mail:
+  <input type="email" name="email">
+</form>
+
+<h2>Input Type Number</h2>
+<form>
+  Quantity (between 0 and 100):
+  <input type="number" name="quantity" min="0" max="100">
+</form>
+
+</body>
+</html>

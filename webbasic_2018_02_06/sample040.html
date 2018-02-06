@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>SIST_쌍용교육센터</title>
+</head>
+<body>
+
+
+<!-- 
+HTML Forms
+
+- 웹 상에서 입력 항목을 구성할 때 사용하는 태그.
+- <form>, <input>, <select>, <textarea> 로 구성.
+- <form> 전체 폼의 부모 역할 태그.
+- <input> 태그는 type="" 속성의 값에 따라서 다양한 입력폼 구성. 예를 들어, type="button"
+- <select> 태그는 선택 항목 구성.
+- <textarea> 태그는 여러 줄의 텍스트 입력 폼 구성.
+- <form> 태그는 Block 엘리먼트, 나머지는 모두 Inline 엘리먼트.
+
+-->
+
+<!-- 
+<form></form> 태그는 전체 폼 양식의 부모 역할. Block 엘리먼트.
+서브밋 액션 진행시 폼 내에 있는 모든 입력 데이터를 서버로 전송하게 된다.
+action="" 속성은 서버 전송시 자동 호출된 서버 프로그램 주소(*.jsp) 지정.
+<input type="text"> 태그는 텍스트 입력용 폼 구성
+name="" 속성은 서버 프로그램에 데이터 전송시 데이터의 식별자로 사용된다.
+<input type="submit"> 태그는 서브밋 액션용 버튼 구성
+value="" 속성은 폼 구성시 기본값 출력. 예를 들어, 버튼인 경우 로그인, 글쓰기. 
+--> 
+<form action="action_page.jsp">
+  First name:<br>
+  <input type="text" name="firstname" value="Mickey"><br>
+  Last name:<br>
+  <input type="text" name="lastname" value="Mouse"><br><br>
+  <input type="submit" value="Submit">
+</form>
+
+
+</body>
+</html>
