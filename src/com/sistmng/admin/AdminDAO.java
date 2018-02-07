@@ -1,11 +1,14 @@
 package com.sistmng.admin;
 
-import java.util.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.sistmng.SQLConnection;
-
-import java.sql.*;
-import java.time.LocalDate;
 
 public class AdminDAO {
 
@@ -73,7 +76,8 @@ public class AdminDAO {
 	public List<Admin> courseList() {
 		List<Admin> result = new ArrayList<Admin>();
 		
-		String sql = "";
+		//코스 코드, 코스 이름
+		String sql = "SELECT courseCode, coursename FROM course_";
 
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -127,7 +131,8 @@ public class AdminDAO {
 		
 		int result = 0;
 		
-		String sql = "";
+		//코스코드, 코스이름
+		String sql = "INSERT INTO course_(courseCode,courseName) VALUES ((SELECT CONCAT('COU', LPAD(NVL(SUBSTR(MAX(mid), 4), 0) + 1, 3, 0)) AS newMid FROM member_),?)";
 
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -167,9 +172,10 @@ public class AdminDAO {
 
 	public int courseDelete(String value) {
 
-		int result = 0;
+		int result = 0;	
 		
-		String sql = "";
+		//코스코드
+		String sql = "DELETE FROM course_ WHERE courseCode = ?";
 
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -178,8 +184,7 @@ public class AdminDAO {
 			
 			pstmt = conn.prepareStatement(sql);
 			
-			pstmt.setString(1,value);
-			
+			pstmt.setString(1,value);		
 			
 			result = pstmt.executeUpdate();
 			
@@ -205,15 +210,15 @@ public class AdminDAO {
 
 	}
 	
-	
 	//1.1.2 과정 삭제 가능 리스트
 	
 	public List<Admin> courseDeleteList() {
 		List<Admin> result = new ArrayList<Admin>();
 		
-		//삭제 쿼리문
-		String sql = "";
 
+		//삭제 가능 목록 리스트
+		//코스코드, 코스이름
+		String sql = "SELECT c.courseCode, c.CourseName FROM course_ c, openCourse_ oc WHERE  c.courseCode = oc.courseCode(+) AND oc.courseCode IS NULL GROUP BY c.courseCode, c.courseName";
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		try {
@@ -263,9 +268,8 @@ public class AdminDAO {
 
 		List<Admin> result = new ArrayList<Admin>();
 		
-		String sql = "";
-		
-		sql += " AND courseCode = ?";
+		//코스 코드, 코스 이름
+		String sql = "SELECT courseCode, courseName FROM course_ WHERE courseCode =?";
 
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -324,7 +328,8 @@ public class AdminDAO {
 
 		List<Admin> result = new ArrayList<Admin>();
 		
-		String sql = "";
+		//과목코드, 과목이름
+		String sql = "SELECT subjectCode, subjectName FROM subject_";
 
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -378,8 +383,8 @@ public class AdminDAO {
 		
 		int result = 0;
 		
-		//subjectCode자동증가
-		String sql = "";
+		//과목코드, 과목이름
+		String sql = "INSERT INTO subject_(subjectCode,subjectName) VALUES ((SELECT CONCAT('SUB', LPAD(NVL(SUBSTR(MAX(mid), 4), 0) + 1, 3, 0)) AS newMid FROM member_),?)";
 
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -420,8 +425,8 @@ public class AdminDAO {
 	public int subjectDelete(String value) {
 
 		int result = 0;
-		
-		String sql = "";
+	
+		String sql = "DELETE FROM subject_ WHERE subjectCode = ?";
 
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -463,8 +468,8 @@ public class AdminDAO {
 
 		List<Admin> result = new ArrayList<Admin>();
 		
-		//삭제 쿼리문
-		String sql = "";
+
+		String sql = "SELECT s.subjectCode, s.subjectName FROM subject_ s, openSubject_ os WHERE  s.subjectCode = os.subjectCode(+) AND os.subjectCode IS NULL GROUP BY  s.subjectCode, s.subjectName";
 
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -516,9 +521,8 @@ public class AdminDAO {
 
 		List<Admin> result = new ArrayList<Admin>();
 		
-		String sql = "";
-		
-		sql += " AND subjectCode = ?";
+		//과목 코드, 과목 이름 
+		String sql = "SELECT subjectCode, subjectName FROM subject_ WHERE subjectCode =?";
 		
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -577,7 +581,8 @@ public class AdminDAO {
 
 		List<Admin> result = new ArrayList<Admin>();
 		
-		String sql = "";
+		//강의실 코드, 강의실 이름, 강의실 정원
+		String sql = "SELECT classCode, className, classQuota FROM class_";
 
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -627,11 +632,12 @@ public class AdminDAO {
 
 	// 1.3.1 강의실 입력
 
-	public int classAdd(String value1,int value2) {
+	public int classAdd(Admin a) {
 
 		int result = 0;
 		
-		String sql = "";
+		//강의실 코드, 관리자 코드(회원코드), 강의실 이름, 강의실 정원
+		String sql = "INSERT INTO class_(classCode,mid,className,classQuota) VALUES ((SELECT CONCAT('CLA', LPAD(NVL(SUBSTR(MAX(mid), 4), 0) + 1, 3, 0)) AS newMid FROM member_),?,?,?)";
 
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -640,8 +646,9 @@ public class AdminDAO {
 			
 			pstmt = conn.prepareStatement(sql);
 			
-			pstmt.setString(1,value1);
-			pstmt.setInt(2,value2);
+			pstmt.setString(1,a.getMid());
+			pstmt.setString(1,a.getClassName());
+			pstmt.setInt(2,a.getClassQuota());
 			
 			
 			result = pstmt.executeUpdate();
@@ -673,8 +680,8 @@ public class AdminDAO {
 	public int classDelete(String value) {
 
 		int result = 0;
-		
-		String sql = "";
+
+		String sql = "DELETE FROM class_ WHERE classCode = ?";
 
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -714,8 +721,9 @@ public class AdminDAO {
 		
 		List<Admin> result = new ArrayList<Admin>();
 		
-		//삭제 쿼리
-		String sql = "";
+		//삭제 가능 강의실 목록
+		//강의실 코드, 강의실 이름
+		String sql = "SELECT c.classCode, c.className FROM class_ c, openCourse_ oc WHERE  c.classCode = oc.classCode(+) AND oc.classCode IS NULL GROUP BY  c.classCode, c.className";
 
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -729,13 +737,13 @@ public class AdminDAO {
 				
 				String classCode = rs.getString("classCode");
 				String className = rs.getString("className");
-				String classQuota = rs.getString("classQuota");
+//				String classQuota = rs.getString("classQuota");
 				
 				Admin m = new Admin();
 				
 				m.setClassCode(classCode);
 				m.setClassName(className);
-				m.setClassQuota(Integer.parseInt(classQuota));
+//				m.setClassQuota(Integer.parseInt(classQuota));
 				
 				result.add(m);
 				
@@ -769,9 +777,8 @@ public class AdminDAO {
 
 		List<Admin> result = new ArrayList<Admin>();
 		
-		String sql = "";
-		
-		sql += " AND classCode = ?";
+		//강의실 코드, 강의실 이름
+		String sql = "SELECT classCode, className FROM class_ WHERE classCode =?";
 		
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -830,7 +837,8 @@ public class AdminDAO {
 		
 		List<Admin> result = new ArrayList<Admin>();
 		
-		String sql = "";
+		//교재 번호, 교재 이름, 출판사
+		String sql = "SELECT bookCode, bookName, bookPublisher FROM books_";
 
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -885,7 +893,8 @@ public class AdminDAO {
 
 		int result = 0;
 		
-		String sql = "";
+		//교재이름, 출판사
+		String sql = "INSERT INTO books_(bookCode,bookName,bookPublisher) VALUES ((SELECT CONCAT('BOK', LPAD(NVL(SUBSTR(MAX(mid), 4), 0) + 1, 3, 0)) AS newMid FROM member_),?,?)";
 
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -926,7 +935,8 @@ public class AdminDAO {
 		
 		int result = 0;
 		
-		String sql = "";
+		//교재 코드 입력
+		String sql = "DELETE FROM books_ WHERE bookCode = ?";
 
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -966,8 +976,9 @@ public class AdminDAO {
 		
 		List<Admin> result = new ArrayList<Admin>();
 		
-		//삭제 쿼리
-		String sql = "";
+		//삭제 가능 교재 목록
+        //교재 코드, 교재 이름
+		String sql = "SELECT b.bookCode, b.bookName FROM books_ b, openSubject_ os WHERE  b.bookCode = os.bookCode(+) AND  os.bookCode IS NULL GROUP BY  b.bookCode, b.bookName";
 
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -981,13 +992,13 @@ public class AdminDAO {
 				
 				String bookCode = rs.getString("bookCode");
 				String bookName = rs.getString("bookName");
-				String bookPublisher = rs.getString("bookPublisher");
+//				String bookPublisher = rs.getString("bookPublisher");
 				
 				Admin m = new Admin();
 				
 				m.setBookCode(bookCode);
 				m.setBookName(bookName);
-				m.setBookPublisher(bookPublisher);
+//				m.setBookPublisher(bookPublisher);
 				
 				result.add(m);
 				
@@ -1022,9 +1033,8 @@ public class AdminDAO {
 
 		List<Admin> result = new ArrayList<Admin>();
 		
-		String sql = "";
-		
-		sql += " AND bookCode = ?";
+		//책 코드, 책 이름, 출판사
+		String sql = "SELECT bookCode, bookName, bookPublisher FROM books_ WHERE bookCode = ?";
 		
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -1667,40 +1677,135 @@ public class AdminDAO {
 
 	// 3.1 개설 과정 출력
 
-	public String openCourseList() {
+	public List<Admin> openCourseList() {
 
-		String result = null;
 
+		//개설과정코드, 과정이름, 과정 시작일, 과정 종료일, 강의실 이름, 등록 과목 수, 등록 인원 수
+		List<Admin> result = new ArrayList<Admin>();
+		String sql = " SELECT oc.openCoCode, co.courseName, oc.openCoStartDate, oc.openCoCloseDate, cl.className, NVL(count_,0) count_, NVL(count_studentHistory,0) count_studentHistory FROM openCourse_ oc, course_ co, class_ cl, count_, count_studentHistory WHERE oc.courseCode = co.courseCode AND oc.classCode = cl.classCode AND  oc.openCoCode = count_.openCoCode(+) AND oc.openCoCode = count_studentHistory.openCoCode(+)";
+		
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		try {
+			conn = SQLConnection.connect();
+			
+			pstmt = conn.prepareStatement(sql);	
+			
+			ResultSet rs = pstmt.executeQuery();
+			
+			while (rs.next()) {
+				
+				String openCoCode = rs.getString("openCoCode");
+				String courseName = rs.getString("courseName");
+				LocalDate openCoStartDate = rs.getDate("openCoStartDate").toLocalDate();
+				LocalDate openCoCloseDate = rs.getDate("openCoCloseDate").toLocalDate();				
+				String className = rs.getString("className");
+				int count_ = rs.getInt("count_");
+				int count_studentHistory = rs.getInt("count_studentHistory");
+				
+				Admin m = new Admin();
+				m.setOpenCoCode(openCoCode);
+				m.setCourseName(courseName);
+				m.setOpenCoStartDate(openCoStartDate);
+				m.setOpenCoCloseDate(openCoCloseDate);
+				m.setClassName(className);
+				m.setCount_(count_);
+				m.setCount_studentHistory(count_studentHistory);
+				result.add(m);
+				
+			}
+			rs.close();
+			
+		} catch (SQLException se) {
+			System.out.print(se.getMessage());
+		} catch (Exception e) {
+			System.out.print(e.getMessage());
+		} finally {
+			try {
+				if (pstmt != null)
+					pstmt.close();
+			} catch (SQLException se) {
+			}
+			try {
+				SQLConnection.close();
+			} catch (SQLException se) {
+				System.out.print(se.getMessage());
+			}
+		}
+		
 		return result;
 
 	}
 
 	// 3.1.1 개설 과정 상세보기
 
-	public String openCourseDetailList() {
-
-		String result = null;
-
+	public List<Admin> openCourseDetailList(String value) {
+		
+		//개설 과정 코드, 과정 이름, 과정 시작일, 과정 종료일, 강의실 이름
+		List<Admin> result = new ArrayList<Admin>();
+        String sql = "SELECT oc.openCoCode, co.courseName, oc.openCoStartDate, oc.openCoCloseDate, cl.className FROM openCourse_ oc, course_ co, class_ cl WHERE oc.courseCode = co.courseCode AND oc.classCode = cl.classCode AND oc.openCoCode = ?";
+        
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        try {
+        	conn = SQLConnection.connect();
+        	pstmt = conn.prepareStatement(sql);
+        	pstmt.setString(1,value);
+        	ResultSet rs = pstmt.executeQuery();
+        	while(rs.next()) {
+        		String openCoCode = rs.getString("openCoCode");
+        		String courseName = rs.getString("courseName");
+        		LocalDate openCoStartDate = rs.getDate("openCoStartDate").toLocalDate();
+        		LocalDate openCoCloseDate = rs.getDate("openCoCloseDate").toLocalDate();
+        		String className = rs.getString("className");
+        		
+        		Admin m = new Admin();
+        		m.setOpenCoCode(openCoCode);
+        		m.setCourseName(courseName);
+        		m.setOpenCoStartDate(openCoStartDate);
+        		m.setOpenCoCloseDate(openCoCloseDate);
+        		m.setClassName(className);
+        		result.add(m);        		
+        	}
+        	rs.close();	
+        } catch(SQLException se) {
+        	System.out.println(se.getMessage());
+        } catch(Exception e) {
+        	System.out.println(e.getMessage());
+        } finally {
+        	try {
+        		if(pstmt != null)
+        			pstmt.close();
+        	} catch(SQLException se) {
+        	}
+        	try {
+        		SQLConnection.close();
+        	} catch (SQLException se) {
+        		System.out.println(se.getMessage());
+        	}
+        }
 		return result;
-
 	}
 
 	// 3.1.1.1 과목 상세보기
 
-	public String subjectDetailList() {
+	public List<Admin> subjectDetailList() {
 
-		String result = null;
-
+		List<Admin> result = new ArrayList<Admin>();
+		
+		
+		
+		
+		
 		return result;
 
 	}
 
 	// 3.1.1.2 수강생 보기
 
-	public String studentDetailList() {
+	public List<Admin> studentDetailList() {
 
-		String result = null;
-
+		List<Admin> result = new ArrayList<Admin>();
 		return result;
 
 	}
@@ -1711,9 +1816,9 @@ public class AdminDAO {
 
 	// classList() 메소드 호출
 
-	public String openCourseAdd() {
+	public List<Admin> openCourseAdd() {
 
-		String result = null;
+		List<Admin> result = new ArrayList<Admin>();
 
 		return result;
 
@@ -1723,9 +1828,9 @@ public class AdminDAO {
 
 	// openCourseList() 메소드 호출
 
-	public String openCourseDelete() {
+	public List<Admin> openCourseDelete() {
 
-		String result = null;
+		List<Admin> result = new ArrayList<Admin>();
 
 		return result;
 

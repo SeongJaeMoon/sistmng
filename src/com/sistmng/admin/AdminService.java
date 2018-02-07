@@ -96,7 +96,7 @@ public class AdminService {
 	//1.1.2 과정삭제
 	public void courseDelete(Scanner sc) {
 		
-		List<Admin>list = dao.courseDeleteList();
+		List<Admin> list = dao.courseDeleteList();
 		
 		System.out.println("삭제 가능 과정 목록입니다.");
 		System.out.println("------------------------------------------");
@@ -109,7 +109,7 @@ public class AdminService {
 		System.out.print("과정코드 >");
 		String courseCode = sc.next();
 		
-		List<Admin>list1 = dao.courseNameList(courseCode);
+		List<Admin> list1 = dao.courseNameList(courseCode);
 
 		for(Admin m : list1) {
 		System.out.printf(String.format("[%s] 과정을 삭제하시겠습니까 (y/n)?",m.getCourseName() ));
@@ -274,13 +274,21 @@ public class AdminService {
 	
 	//1.3.1 강의실 입력
 	public void classAdd(Scanner sc) {
-		
+
+		System.out.print("관리자 아이디>");
+		String mid = sc.next();
 		System.out.print("강의실명 >");
 		String className = sc.next();
+		System.out.print("강의실 정원 >");
 		int classQuota = sc.nextInt();
 		sc.nextLine();
 		
-		int result = dao.classAdd(className,classQuota);
+		Admin a = new Admin();
+		a.setMid(mid);
+		a.setClassName(className);
+		a.setClassQuota(classQuota);
+		
+		int result = dao.classAdd(a);
 		
 		if(result > 0) {
 			System.out.printf(String.format("[%s / 정원: %d명 ]이 성공적으로 추가되었습니다.%n",className,classQuota));
