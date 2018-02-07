@@ -29,12 +29,8 @@ public class AdminService {
 		case 3: classList(sc);break;
 		case 4: bookList(sc);break;
 		
+			}
 		}
-			
-		}
-		
-		
-		
 	}
 	
 	//1.1.과정관리
@@ -68,12 +64,8 @@ public class AdminService {
 		case 0 : run=false; break;
 		case 1: this.courseAdd(sc); break;
 		case 2: this.courseDelete(sc);break;
-		
-		
+			}
 		}
-			
-		}
-		
 	}
 	
 	//1.1.1 과정입력
@@ -434,7 +426,7 @@ public class AdminService {
 	//2. 강사 계정 관리
 	
 	public void InstructorMenu(Scanner sc) {
-		
+	
 		boolean run = true;
 		
 		while(run) {
@@ -465,14 +457,16 @@ public class AdminService {
 	public void InstructorList(Scanner sc) {
 	
 		List<Admin>list = this.dao.InstructorList();
-		
+		if(list.size() == 0) {
+			System.out.println("조회된 정보가 없습니다.");
+		}else {
 		
 		System.out.println("------------------------------------------------------------------");
 		System.out.println("강사번호 / 이름 / 주민번호 / 전화번호 / 강의가능과목 / 강사등록일 ");
 		System.out.println("------------------------------------------------------------------");
 		
 		for(Admin m : list) {
-			System.out.printf(String.format("%s / %s / %s / %s / %s / %s %n"),m.getMid(),m.getName_(),m.getSsn(),m.getPhone(),m.getSubjectName(),m.getInstructorRegDate());
+			System.out.printf(String.format("%s / %s / %s / %s / %s / %s%n", m.getMid(),m.getName_(),m.getSsn(),m.getPhone(),m.getSubjectName(),m.getInstructorRegDate()));
 		}
 		boolean run = true;
 		
@@ -494,12 +488,10 @@ public class AdminService {
 		case 1: this.InstructorSubjectDetailList(sc); break;
 		case 2: this.InstructorSubjectAdd(sc);break;
 		case 3: this.InstructorSubjectDelete(sc);break;
-		
-		
-		}
-			
-		}
-		
+				}
+
+			}
+		}		
 		
 	}
 	

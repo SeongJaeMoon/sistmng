@@ -1085,7 +1085,7 @@ public class AdminDAO {
 	
 	
 	
-	//회원번호,이름 구하는 메소드
+	//회원번호, 이름 구하는 메소드
 	public List<Admin>midNameList(String value) {
 		
 
@@ -1152,19 +1152,26 @@ public class AdminDAO {
 
 	public List<Admin>InstructorList() {
 		
-
 		List<Admin> result = new ArrayList<Admin>();
 		
-		String sql = "";
+		/*
+		 SELECT m.mid, m.name_, m.ssn, m.phone, s.subjectName, i.instructorRegDate
+        FROM member_ m, instructor_ i, checkSubject_ c, subject_ s
+        WHERE m.mid = i.mid
+        AND c.mid = i.mid
+        AND s.subjectCode = c.subjectCode
+        ORDER BY m.mid;
+		 */
 		
-		sql += " WHERE memberStatus = I";
-
+		//강사고유번호, 이름, 주민등록번호 뒷자리, 전화번호, 강의가능과목, 강사등록일
+		String sql = "SELECT m.mid, m.name_, m.ssn, m.phone, s.subjectName, i.instructorRegDate FROM member_ m, instructor_ i, checkSubject_ c, subject_ s WHERE m.mid = i.mid AND c.mid = i.mid AND s.subjectCode = c.subjectCode ORDER BY m.mid";
+		
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		try {
 			conn = SQLConnection.connect();
-			
 			pstmt = conn.prepareStatement(sql);
+			
 			ResultSet rs = pstmt.executeQuery();
 			
 			while (rs.next()) {
@@ -1174,7 +1181,8 @@ public class AdminDAO {
 				String ssn = rs.getString("ssn");
 				String phone = rs.getString("phone");
 				String subjectName = rs.getString("subjectName");
-				String instructorRegDate = rs.getString("instructorRegDate");
+				LocalDate instructorRegDate = rs.getDate("instructorRegDate").toLocalDate();
+				//System.out.println(mid + name_ + ssn + phone + subjectName);
 				
 				Admin m = new Admin();
 				
@@ -1182,12 +1190,10 @@ public class AdminDAO {
 				m.setName_(name_);
 				m.setSsn(ssn);
 				m.setPhone(phone);
-				m.setSubjectCode(subjectName);
-				m.setInstructorRegDate(LocalDate.parse(instructorRegDate));
-				
+				m.setSubjectName(subjectName);
+				m.setInstructorRegDate(instructorRegDate);
 				
 				result.add(m);
-				
 			}
 			rs.close();
 			
@@ -1208,10 +1214,20 @@ public class AdminDAO {
 			}
 		}
 		
-		return result;
-
+		String[]str = new String[result.size()-1];
 		
-
+		for(int i = 0; i < result.size() - 1; ++i) {
+			str[i] = result.get(i).getSubjectName();
+			for(int j = i; j < result.size(); ++j) {
+				if(result.get(i).equals(result.get(j))) {
+					str[i] += String.format(" / %s", result.get(j).getSubjectName());
+					//System.out.println(str[i]);
+					result.get(i).setSubjectName(str[i]);
+					result.remove(j);
+				}
+			}
+		}		
+		return result;
 	}
 
 	// 2.1.1 강사상세보기

@@ -4,7 +4,7 @@ import java.time.LocalDate;
 
 import java.util.*;
 
-public class Admin {
+public class Admin{
 
 	private String mid; // 회원고유번호(pk)
 
@@ -525,5 +525,15 @@ public class Admin {
 		this.testFile = testFile;
 
 	}
-
+	@Override
+	public boolean equals(Object obj) {
+		
+		if(obj instanceof Admin) {
+			Admin ad = (Admin)obj;
+			if(this.mid.equals(ad.getMid())){
+				return true;
+			}
+		}
+		return false;
+	}
 }

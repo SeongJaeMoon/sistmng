@@ -4,7 +4,7 @@ import java.util.*;
 
 public class AdminMain {
 	
-public void adminMenu(Scanner sc) {
+public void adminMain(Scanner sc) {
 		
 		AdminService service = new AdminService();
 		

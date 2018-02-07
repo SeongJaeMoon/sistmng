@@ -37,7 +37,9 @@ public class LoginService {
 	
 	private void login_menu_1(String status, Scanner sc) {
 		switch(status) {
-		case "수강생": st.menu(sc); break;
+		case "수강생": st.studentMain(sc); break;
+		case "관리자": ad.adminMain(sc);break;
+		case "강사" : break;
 		}
 	}
 }
