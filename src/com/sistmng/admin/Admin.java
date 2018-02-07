@@ -58,6 +58,9 @@ public class Admin{
 	
 	private String instStatus; //강의상태
 	
+	private int count_; // 개설과정 등록 갯수
+	
+	private int count_studentHistory; // 과정등록인원
 	
 	
 	public String getInstStatus() {
@@ -525,6 +528,24 @@ public class Admin{
 		this.testFile = testFile;
 
 	}
+	
+	
+	public int getCount_() {
+		return count_;
+	}
+
+	public void setCount_(int count_) {
+		this.count_ = count_;
+	}
+
+	public int getCount_studentHistory() {
+		return count_studentHistory;
+	}
+
+	public void setCount_studentHistory(int count_studentHistory) {
+		this.count_studentHistory = count_studentHistory;
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		
