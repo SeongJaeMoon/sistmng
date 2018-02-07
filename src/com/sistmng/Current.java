@@ -7,6 +7,7 @@ public class Current {
 	}
 	
 	private String mid;
+	private String status; 
 	
 	private Current() {
 		
@@ -21,5 +22,11 @@ public class Current {
 	}
 	public String getCurrent() {
 		return mid;
+	}
+	public void setStatus(String status) {
+		this.status = status;
+	}
+	public String getStatus() {
+		return status;
 	}
 }

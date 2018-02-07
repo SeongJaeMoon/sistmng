@@ -1,12 +1,13 @@
 package com.sistmng.instructor;
 
-import com.connection.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.sistmng.SQLConnection;
 
 public class InstructorDAO {
 
@@ -226,7 +227,7 @@ public class InstructorDAO {
 			}
 		}
 
-		return studentListByCourse;
+		return studentListBySubject;
 	}
 
 	public List<Instructor> subjectListWithTestInfo() {

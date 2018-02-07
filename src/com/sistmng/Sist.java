@@ -10,6 +10,11 @@ public class Sist {
 		boolean run = true;
 		try{
 			while(run) {
+				System.out.println("==================================");
+				System.out.println("성적 처리 시스템");
+				System.out.println("==================================");
+				System.out.println("1.로그인 0.종료");
+				System.out.print("선택 > ");	
 				int input = sc.nextInt();
 				if(input == 0) {
 					run = false; break;

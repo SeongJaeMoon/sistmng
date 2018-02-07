@@ -21,9 +21,10 @@ public class Student {
 	private LocalDate openSubStartDate, openSubCloseDate;
 	//과목코드(pk), 과목명
 	private String subjectCode, subjectName; 
-	//탈락코드(pk), 탈락날짜
+	//탈락코드(pk), 탈락날짜, 수료여부
 	private String failureCode;
 	private LocalDate failureDate;
+	private String failureStatus;
 	//시험코드(pk), 시험날짜, 시험문제파일
 	private String testCode, testFile;
 	private LocalDate testDate;
@@ -42,6 +43,54 @@ public class Student {
 	
 	
 	
+	public String getFailureStatus() {
+		return failureStatus;
+	}
+
+
+
+	public void setFailureStatus(String failureStatus) {
+		this.failureStatus = failureStatus;
+	}
+
+
+
+	public int getAttDistribution() {
+		return attDistribution;
+	}
+
+
+
+	public void setAttDistribution(int attDistribution) {
+		this.attDistribution = attDistribution;
+	}
+
+
+
+	public int getWriDistribution() {
+		return wriDistribution;
+	}
+
+
+
+	public void setWriDistribution(int wriDistribution) {
+		this.wriDistribution = wriDistribution;
+	}
+
+
+
+	public int getPracDistribution() {
+		return pracDistribution;
+	}
+
+
+
+	public void setPracDistribution(int pracDistribution) {
+		this.pracDistribution = pracDistribution;
+	}
+
+
+
 	public String getBookName() {
 		return bookName;
 	}

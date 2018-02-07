@@ -6,7 +6,7 @@ public class StudentMain {
 
 	StudentService sv = new StudentService();
 	
-	public void menu(Scanner sc) {
+	public void studentMain(Scanner sc) {
 		boolean run = true;
 		while(run) {
 		System.out.println("--------------------------------------");
