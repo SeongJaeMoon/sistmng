@@ -185,7 +185,7 @@ public class AdminService {
 		}
 	}
 	
-	//1.2.2 과목삭제
+//	1.2.2 과목삭제
 	public void subjectDelete(Scanner sc) {
 		
 		List<Admin>list = dao.subjectDeleteList();
@@ -199,11 +199,10 @@ public class AdminService {
 		System.out.print("과목코드 >");
 		String subjectCode = sc.next();
 		
-		List<Admin>list1 = dao.subjectList(subjectCode);
+		Admin a = dao.subjectList(subjectCode);
 		
-		for(Admin m : list1) {
-		System.out.printf(String.format("[%s] 과목을 삭제하시겠습니까 (y/n)?",m.getSubjectName()));
-		}
+		System.out.printf(String.format("[%s] 과목을 삭제하시겠습니까 (y/n)?",a.getSubjectName()));
+		
 		
 		String yn = sc.next();
 		
@@ -536,21 +535,27 @@ public class AdminService {
 	
 	System.out.print("강사번호 > ");
 	String mid = sc.next();
+	List<Admin>list = dao.subjectList();
+	System.out.println("--------------------------");
+	System.out.println("과목코드 / 과목명 / 교재명");
+	System.out.println("--------------------------");
+	
+	for(Admin m : list) {
+		System.out.printf(String.format("%s / %s / %s %n"),m.getSubjectCode(),m.getSubjectName(),m.getBookName());
+	}
+	
 	System.out.print("추가과목번호 > ");
 	String subjectCode = sc.next();
 	
-	List<Admin>list = dao.subjectList(subjectCode);
+	Admin a = dao.subjectList(subjectCode);
 	
-	int result = dao.InstructorSubjectAdd(mid,subjectCode);
+	int result = dao.InstructorSubjectAdd(mid, subjectCode);
 	
 	if(result > 0) {
-		for(Admin m : list) {
-		System.out.printf(String.format("[%s / %s ]과목이 성공적으로 추가되었습니다.%n",m.getSubjectCode(),m.getSubjectName()));
-		}
+		System.out.printf(String.format("[%s / %s ]과목이 성공적으로 추가되었습니다.%n", a.getSubjectCode(),a.getSubjectName()));
 	} else {
 		System.out.println("이미 존재하는 과목입니다.");
 	}
-	
 	}
 	
 	
@@ -565,22 +570,22 @@ public class AdminService {
 		System.out.print("삭제과목번호 >");
 		String subjectCode = sc.next();
 		
-		List<Admin>list = dao.subjectList(subjectCode);
+		Admin a = dao.subjectList(subjectCode);
 		
 		String yn = sc.next();
 		
-		for (Admin m : list) {
-		System.out.printf(String.format("[ %s / %s ] 과목을 삭제하시겠습니까 (y/n)?",m.getSubjectCode(),m.getSubjectName()));
-		}
+		
+		System.out.printf(String.format("[ %s / %s ] 과목을 삭제하시겠습니까 (y/n)?",a.getSubjectCode(),a.getSubjectName()));
+		
 		
 		if (yn.equalsIgnoreCase("y")) {
 			
 			int result = dao.InstructorSubjectDelete(mid, subjectCode);
 			
 			if (result > 0) {
-			for (Admin m : list) {
-			System.out.printf(String.format("[ %s / %s ] 과목이 성공적으로 삭제되었습니다.",m.getSubjectCode(),m.getSubjectName()));
-			}
+	
+			System.out.printf(String.format("[ %s / %s ] 과목이 성공적으로 삭제되었습니다.",a.getSubjectCode(),a.getSubjectName()));
+
 			} else {
 				System.out.println("삭제가 정상적으로 이루어지지 않았습니다.");
 			}

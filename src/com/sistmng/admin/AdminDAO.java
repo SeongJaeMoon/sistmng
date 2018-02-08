@@ -324,7 +324,7 @@ public class AdminDAO {
 
 		List<Admin> result = new ArrayList<Admin>();
 		
-		String sql = "";
+		String sql = "SELECT subjectCode, subjectName FROM subject_";
 
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -511,15 +511,13 @@ public class AdminDAO {
 	}
 	
 	//과목이름 물어보는 메소드
-	public List<Admin>subjectList(String value) {
+	public Admin subjectList(String sc) {
 		
 
-		List<Admin> result = new ArrayList<Admin>();
+		Admin result = new Admin();
 		
-		String sql = "";
-		
-		sql += " AND subjectCode = ?";
-		
+		String sql = "SELECT subjectCode, subJectName FROM subject_ WHERE subjectCode = ? ";
+	
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		try {
@@ -527,23 +525,17 @@ public class AdminDAO {
 			
 			pstmt = conn.prepareStatement(sql);
 			
-			pstmt.setString(1, value);
+			pstmt.setString(1, sc);
 			
 			ResultSet rs = pstmt.executeQuery();
 			
 			while (rs.next()) {
 				
-				String courseCode = rs.getString("subjectCode");
-				String courseName = rs.getString("subjectName");
+				String subjectCode = rs.getString("subjectCode");
+				String subjectName = rs.getString("subjectName");
 				
-				Admin m = new Admin();
-				
-				m.setCourseCode(courseCode);
-				m.setCourseName(courseName);
-				
-				
-				
-				result.add(m);
+				result.setSubjectCode(subjectCode);
+				result.setSubjectName(subjectName);
 				
 			}
 			rs.close();
@@ -566,8 +558,6 @@ public class AdminDAO {
 		}
 		
 		return result;
-
-		
 
 	}
 
@@ -1311,17 +1301,12 @@ public class AdminDAO {
 
 	// 2.1.2 강의가능과목 추가
 
-	public int InstructorSubjectAdd(String mid,String subjectCode) {
+	public int InstructorSubjectAdd(String mid, String subjectCode) {
 
 		int result = 0;
 		
-		String sql = "";
-			
-		   
-		   
-		   sql += " AND memberStatus = I";
-	
-
+		String sql = "INSERT INTO checkSubject_(mid,subjectCode) VALUES (?,?)";
+		
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		try {
@@ -1329,11 +1314,9 @@ public class AdminDAO {
 			
 			pstmt = conn.prepareStatement(sql);
 			
-			
 			pstmt.setString(1,mid);
 			pstmt.setString(2,subjectCode);
-			
-			
+				
 			result = pstmt.executeUpdate();
 			
 		} catch (SQLException se) {
