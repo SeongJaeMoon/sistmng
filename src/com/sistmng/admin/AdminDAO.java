@@ -1086,8 +1086,7 @@ public class AdminDAO {
 	
 	
 	//회원번호, 이름 구하는 메소드
-	public List<Admin>midNameList(String value) {
-		
+	public List<Admin>midNameList(String value) {	
 
 		List<Admin> result = new ArrayList<Admin>();
 		
@@ -1141,11 +1140,7 @@ public class AdminDAO {
 		}
 		
 		return result;
-
-		
-
 	}
-	
 	
 	
 	// 2.1 강사 목록
@@ -1201,6 +1196,7 @@ public class AdminDAO {
 					result.add(m);
 					++i;
 				}
+	
 			}
 			rs.close();
 			
@@ -1221,31 +1217,31 @@ public class AdminDAO {
 			}
 		}
 		
-//		String[]str = new String[result.size()-1];
-		
-//		for(int i = 0; i < result.size() - 1; ++i) {
-//			str[i] = result.get(i).getSubjectName();
-//				if(result.get(i).equals(result.get(i+1))) {
-//					str[i] += String.format(" / %s", result.get(i+1).getSubjectName());
-//					result.get(i).setSubjectName(str[i]);
-//					result.remove(i+1);
-//					--i;
-//			}
-//		}		
-		
 		return result;
 	}
 	
 	// 2.1.1 강사상세보기
 
-	public List<Admin> InstructorSubjectDetailList(String value) {
+	public List<Admin> InstructorSubjectDetailList(String mid) {
 		
 		List<Admin> result = new ArrayList<Admin>();
-		
-		String sql = "";
-		   sql += " WHERE mid = ?";
-		   sql += " AND memberStatus = I";
-		
+		//[MEM002 / 장혜진]강사님
+		//강의 과목 / 개설 과목 코드 / 과목 시작일 / 과목 종료일 / 개설 과정 / 개설과정명 / 과정 시작일 / 과정 종료일 / 강의실 / 강의상태						
+		/*
+		 CREATE OR REPLACE VIEW detailInstructor
+        AS
+        SELECT s.subjectName, p.openSubCode, p.openSubStartDate, p.openSubCloseDate, o.openCoCode, c.courseName, o.openCoStartDate, o.openCoCloseDate, l.className, k.mid
+        FROM checkSubject_ k, subject_ s, openCourse_ o, course_ c, class_ l, openSubject_ p
+        WHERE p.mid = k.mid
+        AND k.subjectCode = s.subjectCode
+        AND s.subjectCode = p.subjectCode
+        AND o.openCoCode = p.openCoCode
+        AND o.classCode = l.classCode
+        AND o.courseCode = c.courseCode
+        AND p.subjectCode = s.subjectCode; 
+		 */
+		String sql = "SELECT subjectName, openSubCode, openSubStartDate, openSubCloseDate, openCoCode, courseName, openCoStartDate, openCoCloseDate, className FROM detailInstructor WHERE mid = ?";
+		 
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		try {
@@ -1253,7 +1249,7 @@ public class AdminDAO {
 			
 			pstmt = conn.prepareStatement(sql);
 			
-			pstmt.setString(1, value);
+			pstmt.setString(1, mid);
 			
 			ResultSet rs = pstmt.executeQuery();
 			
@@ -1261,22 +1257,22 @@ public class AdminDAO {
 				
 				String subjectName = rs.getString("subjectName");
 				String openSubCode = rs.getString("openSubCode");
-				String openSubStartDate = rs.getString("openSubStartDate");
-				String openSubCloseDate = rs.getString("openSubCloseDate");
+				LocalDate openSubStartDate = rs.getDate("openSubStartDate").toLocalDate();
+				LocalDate openSubCloseDate = rs.getDate("openSubCloseDate").toLocalDate();
 				String courseName = rs.getString("courseName");
-				String openCoStartDate = rs.getString("openCoStartDate");
-				String openCoCloseDate = rs.getString("openCoCloseDate");
+				LocalDate openCoStartDate = rs.getDate("openCoStartDate").toLocalDate();
+				LocalDate openCoCloseDate = rs.getDate("openCoCloseDate").toLocalDate();
 				String className = rs.getString("className");
 				
 				Admin m = new Admin();
 				
 				m.setSubjectName(subjectName);
 				m.setOpenSubCode(openSubCode);
-				m.setOpenSubStartDate(LocalDate.parse(openSubStartDate));
-				m.setOpenSubCloseDate(LocalDate.parse(openSubCloseDate));
+				m.setOpenSubStartDate(openSubStartDate);
+				m.setOpenSubCloseDate(openSubCloseDate);
 				m.setCourseName(courseName);
-				m.setOpenCoStartDate(LocalDate.parse(openCoStartDate));
-				m.setOpenCoCloseDate(LocalDate.parse(openCoCloseDate));
+				m.setOpenCoStartDate(openCoStartDate);
+				m.setOpenCoCloseDate(openCoCloseDate);
 				m.setClassName(className);
 				
 				if(m.getOpenCoCloseDate().isAfter(now)) {
@@ -1310,9 +1306,6 @@ public class AdminDAO {
 		}
 		
 		return result;
-
-		
-		
 
 	}
 

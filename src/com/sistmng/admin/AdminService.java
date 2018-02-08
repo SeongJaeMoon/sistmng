@@ -475,12 +475,10 @@ public class AdminService {
 		System.out.println("------------------------------------------------------------");
 		System.out.println("1.상세보기 2.강의가능과목 추가 3.강의가능과목 삭제 0.나가기");
 		System.out.println("------------------------------------------------------------");
-		
+		System.out.print("선택 >");
 		
 		int num = sc.nextInt();
 		sc.nextLine();
-		
-		System.out.print("선택 >");
 		
 		switch(num) {
 		
