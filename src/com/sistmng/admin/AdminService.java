@@ -1,6 +1,8 @@
 package com.sistmng.admin;
 
-import java.util.*;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Scanner;
 
 public class AdminService {
 
@@ -88,7 +90,7 @@ public class AdminService {
 	//1.1.2 과정삭제
 	public void courseDelete(Scanner sc) {
 		
-		List<Admin>list = dao.courseDeleteList();
+		List<Admin> list = dao.courseDeleteList();
 		
 		System.out.println("삭제 가능 과정 목록입니다.");
 		System.out.println("------------------------------------------");
@@ -101,7 +103,7 @@ public class AdminService {
 		System.out.print("과정코드 >");
 		String courseCode = sc.next();
 		
-		List<Admin>list1 = dao.courseNameList(courseCode);
+		List<Admin> list1 = dao.courseNameList(courseCode);
 
 		for(Admin m : list1) {
 		System.out.printf(String.format("[%s] 과정을 삭제하시겠습니까 (y/n)?",m.getCourseName() ));
@@ -266,13 +268,21 @@ public class AdminService {
 	
 	//1.3.1 강의실 입력
 	public void classAdd(Scanner sc) {
-		
+
+		System.out.print("관리자 아이디>");
+		String mid = sc.next();
 		System.out.print("강의실명 >");
 		String className = sc.next();
+		System.out.print("강의실 정원 >");
 		int classQuota = sc.nextInt();
 		sc.nextLine();
 		
-		int result = dao.classAdd(className,classQuota);
+		Admin a = new Admin();
+		a.setMid(mid);
+		a.setClassName(className);
+		a.setClassQuota(classQuota);
+		
+		int result = dao.classAdd(a);
 		
 		if(result > 0) {
 			System.out.printf(String.format("[%s / 정원: %d명 ]이 성공적으로 추가되었습니다.%n",className,classQuota));
@@ -697,12 +707,149 @@ public class AdminService {
 	//-----------------------------------------------
 	
 	//3. 개설 과정 관리
+	
+	public void openCourseMenu(Scanner sc) {
+	
+		boolean run = true;
+		
+		while(run) {
+			
+		System.out.println("------------------------------------------");
+		System.out.println("1.개설 과정 출력 2.개설 과정 등록 3.개설 과정 삭제 0.종료");
+		System.out.println("------------------------------------------");
+		
+		int num = sc.nextInt();
+		sc.nextLine();
+		
+		switch(num) {
+		
+		case 0 : run=false; break;
+		case 1: this.openCourseList(sc); break;
+		case 2: this.openCourseAdd(sc);break;
+		case 3: break;
+		
+		}
+			
+		}
+		
+	}
+	
 	//3.1 개설 과정 출력
+	private void openCourseList(Scanner sc) {
+		System.out.println("------------------------------------------");
+		System.out.println("개설 과정 코드 / 개설 과정 명 / 개설 과정 기간 / 강의실명 / 개설 과목 등록 갯 수 / 수강생 인원");
+		System.out.println("------------------------------------------");
+		List<Admin> list = dao.openCourseList();
+		for(Admin a : list) {
+			System.out.printf("%s %s %s~%s %s %s %s %n",a.getOpenCoCode(),a.getCourseName(),a.getOpenCoStartDate(),a.getOpenCoCloseDate(),a.getClassName(),a.getCount_(),a.getCount_studentHistory());
+		}
+		System.out.println("------------------------------------------");
+		System.out.println("1.상세보기 0.나가기");
+		int selectNo = sc.nextInt();
+		sc.nextLine();
+		System.out.println("개설과정코드 >");
+		String value = sc.next();
+		switch(selectNo) {
+		  case 1 : this.openCourseDetailList(sc, value);break;
+		  case 0 : break;
+		}
+	}
+	
+	
 	//3.1.1 개설 과정 상세보기
+	private void openCourseDetailList(Scanner sc, String value) {
+		List<Admin> list = dao.openCourseDetailList(value);
+		
+		if(list.size()<=0) {
+			System.out.println("존재하지 않는 코드입니다.");
+		}else {
+			System.out.println("------------------------------------------");
+			System.out.println("개설 과정 코드 / 개설 과정 명 / 개설 과정 기간 / 강의실명");
+			System.out.println("------------------------------------------");
+			for(Admin a : list) {
+			System.out.printf("%s %s %s ~ %s %s %n",a.getOpenCoCode(),a.getCourseName(),a.getOpenCoStartDate(),a.getOpenCoCloseDate(),a.getClassName());
+			}
+			System.out.println("------------------------------------------");
+			System.out.println("1.과목 상세보기 2.수강생 상세보기 0.나가기");
+			int selectNo = sc.nextInt();
+			sc.nextLine();
+			switch(selectNo) {
+			  case 1 : this.subjectDetailList(value);break;
+			  case 2 : this.studentDetailList(value);break;
+			  case 0 : break;
+			}
+		}
+	}
+	
 	//3.1.1.1 과목 상세보기
+	private void subjectDetailList(String value) {
+		List<Admin> list = dao.subjectDetailList(value);
+		System.out.println("------------------------------------------");
+		System.out.println("개설 과목 명 / 개설 과목 기간 / 교재명 / 강사명");
+		System.out.println("------------------------------------------");
+		for(Admin a : list) {
+			System.out.printf("%s %s %s ~ %s %s %n",a.getSubjectName(),a.getOpenSubStartDate(),a.getOpenSubCloseDate(),a.getBookName(),a.getName_());
+			}
+		System.out.println("------------------------------------------");
+	}
+	
+	
 	//3.1.1.2 수강생 보기
+	private void studentDetailList(String value) {
+		List<Admin> list = dao.studentDetailList(value);
+		System.out.println("------------------------------------------");
+		System.out.println("수강생 / 주민번호 뒷자리 / 전화번호 / 수강생 등록일 / 수료일");
+		System.out.println("------------------------------------------");
+		for(Admin a : list) {
+			System.out.printf("%s %s %s %s %s %n",a.getName_(),a.getSsn(),a.getPhone(),a.getSstudentRegDate(),a.getCompletionCheck());
+			}
+		System.out.println("------------------------------------------");
+	}		
 	
 	//3.2 개설 과정 등록
+	private void openCourseAdd(Scanner sc) {
+		
+		List<Admin> list = dao.courseList();
+		
+		int ab = 0;
+		
+		String classCodeSc = sc.next();
+		
+		System.out.println("------------------------------------------");
+		System.out.println("과정코드 / 과정명");
+		System.out.println("------------------------------------------");
+		
+		for(Admin a : list) {
+			System.out.printf("%s %s %n",a.getCourseCode(), a.getCourseName());
+			}
+		
+		System.out.println("------------------------------------------");
+		System.out.println("개설 과정 코드 >");
+		String value = sc.next();
+		
+		for(Admin a : list) {
+			if(a.getCourseCode().equals(value)) {
+				
+				Admin m = new Admin();
+				System.out.println("개설 과정 시작일>");
+				String openCoStartDate = sc.next();
+				System.out.println("개설 과정 종료일>");
+			    String oepnCoCloseDate = sc.next();
+			    m.setOpenCoCode(value);
+			    m.setOpenCoStartDate(LocalDate.parse(openCoStartDate));
+			    m.setOpenCoCloseDate(LocalDate.parse(oepnCoCloseDate));
+			    
+			    ab = dao.openCourseAdd(m);
+			    return;
+			}
+		}
+		System.out.println("존재 하지 않는 과정입니다.");
+	}
+	
+	
+	
+	
+	
 	//3.3 개설 과정 삭제
 	
 	//-----------------------------------------------

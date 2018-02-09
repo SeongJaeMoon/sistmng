@@ -57,11 +57,14 @@ public class Admin{
 	private String testFile; // 시험문제파일
 	
 	private String instStatus; //강의상태
-	
+
 	private int count_; // 개설과정 등록 갯수
 	
 	private int count_studentHistory; // 과정등록인원
+
+	private String completionCheck; //수료여부
 	
+	private String checkDelOpenCourse; // 개설과정 삭제 가능 여부
 	
 	public String getInstStatus() {
 		return instStatus;
@@ -528,8 +531,7 @@ public class Admin{
 		this.testFile = testFile;
 
 	}
-	
-	
+
 	public int getCount_() {
 		return count_;
 	}
@@ -538,12 +540,28 @@ public class Admin{
 		this.count_ = count_;
 	}
 
+
 	public int getCount_studentHistory() {
 		return count_studentHistory;
 	}
 
 	public void setCount_studentHistory(int count_studentHistory) {
 		this.count_studentHistory = count_studentHistory;
+	}
+	public String getCompletionCheck() {
+		return completionCheck;
+	}
+
+	public void setCompletionCheck(String completionCheck) {
+		this.completionCheck = completionCheck;
+	}
+
+	public String getCheckDelOpenCourse() {
+		return checkDelOpenCourse;
+	}
+
+	public void setCheckDelOpenCourse(String checkDelOpenCourse) {
+		this.checkDelOpenCourse = checkDelOpenCourse;
 	}
 
 	@Override

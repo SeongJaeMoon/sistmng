@@ -16,12 +16,16 @@ public class LoginService {
 	
 	public void login(Scanner sc) {
 		System.out.print("이름 >");
-		String name_ = sc.next();
+//		String name_ = sc.next();
 		System.out.print("비밀번호(주민번호 뒤 7자리) >");
-		String ssn = sc.next();
+//		String ssn = sc.next();
+//		Member m = new Member();
+//		m.setName(name_);
+//		m.setSsn(ssn);
+//		Member mem = this.dao.login_menu(m);
 		Member m = new Member();
-		m.setName(name_);
-		m.setSsn(ssn);
+		m.setName("문성재");
+		m.setSsn("1111111");
 		Member mem = this.dao.login_menu(m);
 		if(mem!=null) {
 			
