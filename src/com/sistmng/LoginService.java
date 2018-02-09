@@ -39,7 +39,7 @@ public class LoginService {
 		switch(status) {
 		case "수강생": st.studentMain(sc); break;
 		case "관리자": ad.adminMain(sc);break;
-		case "강사" : break;
+		case "강사" : in.instructorMain(sc);break;
 		}
 	}
 }

@@ -73,7 +73,7 @@ public class AdminDAO {
 	public List<Admin> courseList() {
 		List<Admin> result = new ArrayList<Admin>();
 		
-		String sql = "";
+		String sql = "SELECT courseCode, coursename FROM course_";
 
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -127,7 +127,8 @@ public class AdminDAO {
 		
 		int result = 0;
 		
-		String sql = "";
+		//코스코드, 코스이름
+		String sql = "INSERT INTO course_(courseCode,courseName) VALUES ((SELECT CONCAT('COU', LPAD(NVL(SUBSTR(MAX(mid), 4), 0) + 1, 3, 0)) AS newMid FROM member_),?)";
 
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -169,7 +170,8 @@ public class AdminDAO {
 
 		int result = 0;
 		
-		String sql = "";
+		//코스코드
+		String sql = "DELETE FROM course_ WHERE courseCode = ?";
 
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -211,8 +213,9 @@ public class AdminDAO {
 	public List<Admin> courseDeleteList() {
 		List<Admin> result = new ArrayList<Admin>();
 		
-		//삭제 쿼리문
-		String sql = "";
+		//삭제 가능 목록 리스트
+		//코스코드, 코스이름
+		String sql = "SELECT c.courseCode, c.CourseName FROM course_ c, openCourse_ oc WHERE  c.courseCode = oc.courseCode(+) AND oc.courseCode IS NULL GROUP BY c.courseCode, c.courseName";
 
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -263,9 +266,8 @@ public class AdminDAO {
 
 		List<Admin> result = new ArrayList<Admin>();
 		
-		String sql = "";
-		
-		sql += " AND courseCode = ?";
+		//코스 코드, 코스 이름
+		String sql = "SELECT courseCode, courseName FROM course_ WHERE courseCode =?";
 
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -324,7 +326,7 @@ public class AdminDAO {
 
 		List<Admin> result = new ArrayList<Admin>();
 		
-		String sql = "";
+		String sql = "SELECT subjectCode, subjectName FROM subject_";
 
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -379,7 +381,8 @@ public class AdminDAO {
 		int result = 0;
 		
 		//subjectCode자동증가
-		String sql = "";
+		//과목코드, 과목이름
+		String sql = "INSERT INTO subject_(subjectCode,subjectName) VALUES ((SELECT CONCAT('SUB', LPAD(NVL(SUBSTR(MAX(mid), 4), 0) + 1, 3, 0)) AS newMid FROM member_),?)";
 
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -421,7 +424,7 @@ public class AdminDAO {
 
 		int result = 0;
 		
-		String sql = "";
+		String sql = "DELETE FROM subject_ WHERE subjectCode = ?";
 
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -464,7 +467,7 @@ public class AdminDAO {
 		List<Admin> result = new ArrayList<Admin>();
 		
 		//삭제 쿼리문
-		String sql = "";
+		String sql = "SELECT s.subjectCode, s.subjectName FROM subject_ s, openSubject_ os WHERE  s.subjectCode = os.subjectCode(+) AND os.subjectCode IS NULL GROUP BY  s.subjectCode, s.subjectName";
 
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -511,15 +514,13 @@ public class AdminDAO {
 	}
 	
 	//과목이름 물어보는 메소드
-	public List<Admin>subjectList(String value) {
+	public Admin subjectList(String sc) {
 		
 
-		List<Admin> result = new ArrayList<Admin>();
+		Admin result = new Admin();
 		
-		String sql = "";
-		
-		sql += " AND subjectCode = ?";
-		
+		String sql = "SELECT subjectCode, subJectName FROM subject_ WHERE subjectCode = ? ";
+	
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		try {
@@ -527,23 +528,17 @@ public class AdminDAO {
 			
 			pstmt = conn.prepareStatement(sql);
 			
-			pstmt.setString(1, value);
+			pstmt.setString(1, sc);
 			
 			ResultSet rs = pstmt.executeQuery();
 			
 			while (rs.next()) {
 				
-				String courseCode = rs.getString("subjectCode");
-				String courseName = rs.getString("subjectName");
+				String subjectCode = rs.getString("subjectCode");
+				String subjectName = rs.getString("subjectName");
 				
-				Admin m = new Admin();
-				
-				m.setCourseCode(courseCode);
-				m.setCourseName(courseName);
-				
-				
-				
-				result.add(m);
+				result.setSubjectCode(subjectCode);
+				result.setSubjectName(subjectName);
 				
 			}
 			rs.close();
@@ -567,8 +562,6 @@ public class AdminDAO {
 		
 		return result;
 
-		
-
 	}
 
 	// 1.3 강의실 관리
@@ -577,7 +570,8 @@ public class AdminDAO {
 
 		List<Admin> result = new ArrayList<Admin>();
 		
-		String sql = "";
+		//강의실 코드, 강의실 이름, 강의실 정원
+		String sql = "SELECT classCode, className, classQuota FROM class_";
 
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -631,7 +625,9 @@ public class AdminDAO {
 
 		int result = 0;
 		
-		String sql = "";
+		//강의실 코드, 관리자 코드(회원코드), 강의실 이름, 강의실 정원
+		String sql = "INSERT INTO class_(classCode,mid,className,classQuota) VALUES ((SELECT CONCAT('CLA', LPAD(NVL(SUBSTR(MAX(mid), 4), 0) + 1, 3, 0)) AS newMid FROM member_),?,?,?)";
+
 
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -674,7 +670,7 @@ public class AdminDAO {
 
 		int result = 0;
 		
-		String sql = "";
+		String sql = "DELETE FROM class_ WHERE classCode = ?";
 
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -715,7 +711,9 @@ public class AdminDAO {
 		List<Admin> result = new ArrayList<Admin>();
 		
 		//삭제 쿼리
-		String sql = "";
+		//삭제 가능 강의실 목록
+		//강의실 코드, 강의실 이름
+		String sql = "SELECT c.classCode, c.className FROM class_ c, openCourse_ oc WHERE  c.classCode = oc.classCode(+) AND oc.classCode IS NULL GROUP BY  c.classCode, c.className";
 
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -769,9 +767,8 @@ public class AdminDAO {
 
 		List<Admin> result = new ArrayList<Admin>();
 		
-		String sql = "";
-		
-		sql += " AND classCode = ?";
+		//강의실 코드, 강의실 이름
+		String sql = "SELECT classCode, className FROM class_ WHERE classCode =?";
 		
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -830,7 +827,8 @@ public class AdminDAO {
 		
 		List<Admin> result = new ArrayList<Admin>();
 		
-		String sql = "";
+		//교재 번호, 교재 이름, 출판사
+		String sql = "SELECT bookCode, bookName, bookPublisher FROM books_";
 
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -884,8 +882,8 @@ public class AdminDAO {
 	public int bookAdd(String value1,String value2) {
 
 		int result = 0;
-		
-		String sql = "";
+		//교재이름, 출판사
+		String sql = "INSERT INTO books_(bookCode,bookName,bookPublisher) VALUES ((SELECT CONCAT('BOK', LPAD(NVL(SUBSTR(MAX(mid), 4), 0) + 1, 3, 0)) AS newMid FROM member_),?,?)";
 
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -926,7 +924,9 @@ public class AdminDAO {
 		
 		int result = 0;
 		
-		String sql = "";
+		//교재 코드 입력
+		String sql = "DELETE FROM books_ WHERE bookCode = ?";
+
 
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -966,8 +966,10 @@ public class AdminDAO {
 		
 		List<Admin> result = new ArrayList<Admin>();
 		
-		//삭제 쿼리
-		String sql = "";
+		//삭제 가능 교재 목록
+        //교재 코드, 교재 이름
+		String sql = "SELECT b.bookCode, b.bookName FROM books_ b, openSubject_ os WHERE  b.bookCode = os.bookCode(+) AND  os.bookCode IS NULL GROUP BY  b.bookCode, b.bookName";
+
 
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -1022,9 +1024,9 @@ public class AdminDAO {
 
 		List<Admin> result = new ArrayList<Admin>();
 		
-		String sql = "";
-		
-		sql += " AND bookCode = ?";
+		//책 코드, 책 이름, 출판사
+		String sql = "SELECT bookCode, bookName, bookPublisher FROM books_ WHERE bookCode = ?";
+				
 		
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -1085,17 +1087,13 @@ public class AdminDAO {
 	
 	
 	
-	//회원번호, 이름 구하는 메소드
-	public List<Admin>midNameList(String value) {
-		
+	//강사 회원번호, 이름 구하는 메소드
+	public Admin midNameList(String key) {	
 
-		List<Admin> result = new ArrayList<Admin>();
+		Admin result = new Admin();
 		
-		String sql = "";
+		String sql = "SELECT mid, name_ FROM member_ WHERE mid = ?";
 		
-		sql += " WHERE memberStatus = I";
-		sql += " AND mid = ?";
-
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		try {
@@ -1103,7 +1101,7 @@ public class AdminDAO {
 			
 			pstmt = conn.prepareStatement(sql);
 			
-			pstmt.setString(1, value);
+			pstmt.setString(1, key);
 			
 			ResultSet rs = pstmt.executeQuery();
 			
@@ -1114,11 +1112,8 @@ public class AdminDAO {
 				
 				Admin m = new Admin();
 				
-				m.setMid(mid); 
-				m.setName_(name_);
-				
-				
-				result.add(m);
+				result.setMid(mid); 
+				result.setName_(name_);
 				
 			}
 			rs.close();
@@ -1141,11 +1136,7 @@ public class AdminDAO {
 		}
 		
 		return result;
-
-		
-
 	}
-	
 	
 	
 	// 2.1 강사 목록
@@ -1155,7 +1146,7 @@ public class AdminDAO {
 		List<Admin> result = new ArrayList<Admin>();
 		
 		/*
-		 SELECT m.mid, m.name_, m.ssn, m.phone, s.subjectName, i.instructorRegDate
+		SELECT m.mid, m.name_, m.ssn, m.phone, s.subjectName, i.instructorRegDate
         FROM member_ m, instructor_ i, checkSubject_ c, subject_ s
         WHERE m.mid = i.mid
         AND c.mid = i.mid
@@ -1165,7 +1156,7 @@ public class AdminDAO {
 		
 		//강사고유번호, 이름, 주민등록번호 뒷자리, 전화번호, 강의가능과목, 강사등록일
 		String sql = "SELECT m.mid, m.name_, m.ssn, m.phone, s.subjectName, i.instructorRegDate FROM member_ m, instructor_ i, checkSubject_ c, subject_ s WHERE m.mid = i.mid AND c.mid = i.mid AND s.subjectCode = c.subjectCode ORDER BY m.mid";
-		
+		int i = 0;
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		try {
@@ -1173,7 +1164,7 @@ public class AdminDAO {
 			pstmt = conn.prepareStatement(sql);
 			
 			ResultSet rs = pstmt.executeQuery();
-			
+	
 			while (rs.next()) {
 				
 				String mid = rs.getString("mid");
@@ -1182,7 +1173,7 @@ public class AdminDAO {
 				String phone = rs.getString("phone");
 				String subjectName = rs.getString("subjectName");
 				LocalDate instructorRegDate = rs.getDate("instructorRegDate").toLocalDate();
-				//System.out.println(mid + name_ + ssn + phone + subjectName);
+				
 				
 				Admin m = new Admin();
 				
@@ -1193,7 +1184,15 @@ public class AdminDAO {
 				m.setSubjectName(subjectName);
 				m.setInstructorRegDate(instructorRegDate);
 				
-				result.add(m);
+				if(result.size() == 0) {
+					result.add(m);
+				}else if(result.get(i).getMid().equals(mid)) {
+					result.get(i).setSubjectName(String.format("%s / %s", result.get(i).getSubjectName(), subjectName));
+				}else {
+					result.add(m);
+					++i;
+				}
+	
 			}
 			rs.close();
 			
@@ -1214,32 +1213,31 @@ public class AdminDAO {
 			}
 		}
 		
-		String[]str = new String[result.size()-1];
-		
-		for(int i = 0; i < result.size() - 1; ++i) {
-			str[i] = result.get(i).getSubjectName();
-			for(int j = i; j < result.size(); ++j) {
-				if(result.get(i).equals(result.get(j))) {
-					str[i] += String.format(" / %s", result.get(j).getSubjectName());
-					//System.out.println(str[i]);
-					result.get(i).setSubjectName(str[i]);
-					result.remove(j);
-				}
-			}
-		}		
 		return result;
 	}
-
+	
 	// 2.1.1 강사상세보기
 
-	public List<Admin> InstructorSubjectDetailList(String value) {
+	public List<Admin> InstructorSubjectDetailList(String mid) {
 		
 		List<Admin> result = new ArrayList<Admin>();
-		
-		String sql = "";
-		   sql += " WHERE mid = ?";
-		   sql += " AND memberStatus = I";
-		
+		//[MEM002 / 장혜진]강사님
+		//강의 과목 / 개설 과목 코드 / 과목 시작일 / 과목 종료일 / 개설 과정 / 개설과정명 / 과정 시작일 / 과정 종료일 / 강의실 / 강의상태						
+		/*
+		 CREATE OR REPLACE VIEW detailInstructor
+        AS
+        SELECT s.subjectName, p.openSubCode, p.openSubStartDate, p.openSubCloseDate, o.openCoCode, c.courseName, o.openCoStartDate, o.openCoCloseDate, l.className, k.mid
+        FROM checkSubject_ k, subject_ s, openCourse_ o, course_ c, class_ l, openSubject_ p
+        WHERE p.mid = k.mid
+        AND k.subjectCode = s.subjectCode
+        AND s.subjectCode = p.subjectCode
+        AND o.openCoCode = p.openCoCode
+        AND o.classCode = l.classCode
+        AND o.courseCode = c.courseCode
+        AND p.subjectCode = s.subjectCode; 
+		 */
+		String sql = "SELECT subjectName, openSubCode, openSubStartDate, openSubCloseDate, openCoCode, courseName, openCoStartDate, openCoCloseDate, className FROM detailInstructor WHERE mid = ?";
+		 
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		try {
@@ -1247,7 +1245,7 @@ public class AdminDAO {
 			
 			pstmt = conn.prepareStatement(sql);
 			
-			pstmt.setString(1, value);
+			pstmt.setString(1, mid);
 			
 			ResultSet rs = pstmt.executeQuery();
 			
@@ -1255,22 +1253,22 @@ public class AdminDAO {
 				
 				String subjectName = rs.getString("subjectName");
 				String openSubCode = rs.getString("openSubCode");
-				String openSubStartDate = rs.getString("openSubStartDate");
-				String openSubCloseDate = rs.getString("openSubCloseDate");
+				LocalDate openSubStartDate = rs.getDate("openSubStartDate").toLocalDate();
+				LocalDate openSubCloseDate = rs.getDate("openSubCloseDate").toLocalDate();
 				String courseName = rs.getString("courseName");
-				String openCoStartDate = rs.getString("openCoStartDate");
-				String openCoCloseDate = rs.getString("openCoCloseDate");
+				LocalDate openCoStartDate = rs.getDate("openCoStartDate").toLocalDate();
+				LocalDate openCoCloseDate = rs.getDate("openCoCloseDate").toLocalDate();
 				String className = rs.getString("className");
 				
 				Admin m = new Admin();
 				
 				m.setSubjectName(subjectName);
 				m.setOpenSubCode(openSubCode);
-				m.setOpenSubStartDate(LocalDate.parse(openSubStartDate));
-				m.setOpenSubCloseDate(LocalDate.parse(openSubCloseDate));
+				m.setOpenSubStartDate(openSubStartDate);
+				m.setOpenSubCloseDate(openSubCloseDate);
 				m.setCourseName(courseName);
-				m.setOpenCoStartDate(LocalDate.parse(openCoStartDate));
-				m.setOpenCoCloseDate(LocalDate.parse(openCoCloseDate));
+				m.setOpenCoStartDate(openCoStartDate);
+				m.setOpenCoCloseDate(openCoCloseDate);
 				m.setClassName(className);
 				
 				if(m.getOpenCoCloseDate().isAfter(now)) {
@@ -1305,24 +1303,16 @@ public class AdminDAO {
 		
 		return result;
 
-		
-		
-
 	}
 
 	// 2.1.2 강의가능과목 추가
 
-	public int InstructorSubjectAdd(String mid,String subjectCode) {
+	public int InstructorSubjectAdd(String mid, String subjectCode) {
 
 		int result = 0;
 		
-		String sql = "";
-			
-		   
-		   
-		   sql += " AND memberStatus = I";
-	
-
+		String sql = "INSERT INTO checkSubject_(mid,subjectCode) VALUES (?,?)";
+		
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		try {
@@ -1330,11 +1320,9 @@ public class AdminDAO {
 			
 			pstmt = conn.prepareStatement(sql);
 			
-			
 			pstmt.setString(1,mid);
 			pstmt.setString(2,subjectCode);
-			
-			
+				
 			result = pstmt.executeUpdate();
 			
 		} catch (SQLException se) {
