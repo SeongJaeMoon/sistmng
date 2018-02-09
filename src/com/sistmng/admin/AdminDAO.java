@@ -73,7 +73,7 @@ public class AdminDAO {
 	public List<Admin> courseList() {
 		List<Admin> result = new ArrayList<Admin>();
 		
-		String sql = "";
+		String sql = "SELECT courseCode, coursename FROM course_";
 
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -127,7 +127,8 @@ public class AdminDAO {
 		
 		int result = 0;
 		
-		String sql = "";
+		//코스코드, 코스이름
+		String sql = "INSERT INTO course_(courseCode,courseName) VALUES ((SELECT CONCAT('COU', LPAD(NVL(SUBSTR(MAX(mid), 4), 0) + 1, 3, 0)) AS newMid FROM member_),?)";
 
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -169,7 +170,8 @@ public class AdminDAO {
 
 		int result = 0;
 		
-		String sql = "";
+		//코스코드
+		String sql = "DELETE FROM course_ WHERE courseCode = ?";
 
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -211,8 +213,9 @@ public class AdminDAO {
 	public List<Admin> courseDeleteList() {
 		List<Admin> result = new ArrayList<Admin>();
 		
-		//삭제 쿼리문
-		String sql = "";
+		//삭제 가능 목록 리스트
+		//코스코드, 코스이름
+		String sql = "SELECT c.courseCode, c.CourseName FROM course_ c, openCourse_ oc WHERE  c.courseCode = oc.courseCode(+) AND oc.courseCode IS NULL GROUP BY c.courseCode, c.courseName";
 
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -263,9 +266,8 @@ public class AdminDAO {
 
 		List<Admin> result = new ArrayList<Admin>();
 		
-		String sql = "";
-		
-		sql += " AND courseCode = ?";
+		//코스 코드, 코스 이름
+		String sql = "SELECT courseCode, courseName FROM course_ WHERE courseCode =?";
 
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -379,7 +381,8 @@ public class AdminDAO {
 		int result = 0;
 		
 		//subjectCode자동증가
-		String sql = "";
+		//과목코드, 과목이름
+		String sql = "INSERT INTO subject_(subjectCode,subjectName) VALUES ((SELECT CONCAT('SUB', LPAD(NVL(SUBSTR(MAX(mid), 4), 0) + 1, 3, 0)) AS newMid FROM member_),?)";
 
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -421,7 +424,7 @@ public class AdminDAO {
 
 		int result = 0;
 		
-		String sql = "";
+		String sql = "DELETE FROM subject_ WHERE subjectCode = ?";
 
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -464,7 +467,7 @@ public class AdminDAO {
 		List<Admin> result = new ArrayList<Admin>();
 		
 		//삭제 쿼리문
-		String sql = "";
+		String sql = "SELECT s.subjectCode, s.subjectName FROM subject_ s, openSubject_ os WHERE  s.subjectCode = os.subjectCode(+) AND os.subjectCode IS NULL GROUP BY  s.subjectCode, s.subjectName";
 
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -567,7 +570,8 @@ public class AdminDAO {
 
 		List<Admin> result = new ArrayList<Admin>();
 		
-		String sql = "";
+		//강의실 코드, 강의실 이름, 강의실 정원
+		String sql = "SELECT classCode, className, classQuota FROM class_";
 
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -621,7 +625,9 @@ public class AdminDAO {
 
 		int result = 0;
 		
-		String sql = "";
+		//강의실 코드, 관리자 코드(회원코드), 강의실 이름, 강의실 정원
+		String sql = "INSERT INTO class_(classCode,mid,className,classQuota) VALUES ((SELECT CONCAT('CLA', LPAD(NVL(SUBSTR(MAX(mid), 4), 0) + 1, 3, 0)) AS newMid FROM member_),?,?,?)";
+
 
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -664,7 +670,7 @@ public class AdminDAO {
 
 		int result = 0;
 		
-		String sql = "";
+		String sql = "DELETE FROM class_ WHERE classCode = ?";
 
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -705,7 +711,9 @@ public class AdminDAO {
 		List<Admin> result = new ArrayList<Admin>();
 		
 		//삭제 쿼리
-		String sql = "";
+		//삭제 가능 강의실 목록
+		//강의실 코드, 강의실 이름
+		String sql = "SELECT c.classCode, c.className FROM class_ c, openCourse_ oc WHERE  c.classCode = oc.classCode(+) AND oc.classCode IS NULL GROUP BY  c.classCode, c.className";
 
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -759,9 +767,8 @@ public class AdminDAO {
 
 		List<Admin> result = new ArrayList<Admin>();
 		
-		String sql = "";
-		
-		sql += " AND classCode = ?";
+		//강의실 코드, 강의실 이름
+		String sql = "SELECT classCode, className FROM class_ WHERE classCode =?";
 		
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -820,7 +827,8 @@ public class AdminDAO {
 		
 		List<Admin> result = new ArrayList<Admin>();
 		
-		String sql = "";
+		//교재 번호, 교재 이름, 출판사
+		String sql = "SELECT bookCode, bookName, bookPublisher FROM books_";
 
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -874,8 +882,8 @@ public class AdminDAO {
 	public int bookAdd(String value1,String value2) {
 
 		int result = 0;
-		
-		String sql = "";
+		//교재이름, 출판사
+		String sql = "INSERT INTO books_(bookCode,bookName,bookPublisher) VALUES ((SELECT CONCAT('BOK', LPAD(NVL(SUBSTR(MAX(mid), 4), 0) + 1, 3, 0)) AS newMid FROM member_),?,?)";
 
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -916,7 +924,9 @@ public class AdminDAO {
 		
 		int result = 0;
 		
-		String sql = "";
+		//교재 코드 입력
+		String sql = "DELETE FROM books_ WHERE bookCode = ?";
+
 
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -956,8 +966,10 @@ public class AdminDAO {
 		
 		List<Admin> result = new ArrayList<Admin>();
 		
-		//삭제 쿼리
-		String sql = "";
+		//삭제 가능 교재 목록
+        //교재 코드, 교재 이름
+		String sql = "SELECT b.bookCode, b.bookName FROM books_ b, openSubject_ os WHERE  b.bookCode = os.bookCode(+) AND  os.bookCode IS NULL GROUP BY  b.bookCode, b.bookName";
+
 
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -1012,9 +1024,9 @@ public class AdminDAO {
 
 		List<Admin> result = new ArrayList<Admin>();
 		
-		String sql = "";
-		
-		sql += " AND bookCode = ?";
+		//책 코드, 책 이름, 출판사
+		String sql = "SELECT bookCode, bookName, bookPublisher FROM books_ WHERE bookCode = ?";
+				
 		
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -1075,16 +1087,13 @@ public class AdminDAO {
 	
 	
 	
-	//회원번호, 이름 구하는 메소드
-	public List<Admin>midNameList(String value) {	
+	//강사 회원번호, 이름 구하는 메소드
+	public Admin midNameList(String key) {	
 
-		List<Admin> result = new ArrayList<Admin>();
+		Admin result = new Admin();
 		
-		String sql = "";
+		String sql = "SELECT mid, name_ FROM member_ WHERE mid = ?";
 		
-		sql += " WHERE memberStatus = I";
-		sql += " AND mid = ?";
-
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		try {
@@ -1092,7 +1101,7 @@ public class AdminDAO {
 			
 			pstmt = conn.prepareStatement(sql);
 			
-			pstmt.setString(1, value);
+			pstmt.setString(1, key);
 			
 			ResultSet rs = pstmt.executeQuery();
 			
@@ -1103,11 +1112,8 @@ public class AdminDAO {
 				
 				Admin m = new Admin();
 				
-				m.setMid(mid); 
-				m.setName_(name_);
-				
-				
-				result.add(m);
+				result.setMid(mid); 
+				result.setName_(name_);
 				
 			}
 			rs.close();

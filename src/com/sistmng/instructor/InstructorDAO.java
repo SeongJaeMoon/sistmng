@@ -7,11 +7,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.sistmng.Current;
 import com.sistmng.SQLConnection;
 
 public class InstructorDAO {
 
-	private String loginInstructor = "MEM002";
 
 	public List<Instructor> instructorInfo() {
 
@@ -34,7 +34,7 @@ public class InstructorDAO {
 			conn = SQLConnection.connect();
 			pstmt = conn.prepareStatement(sql);
 
-			pstmt.setString(1, this.loginInstructor);
+			pstmt.setString(1, Current.getInstance().getCurrent());
 
 			ResultSet rs = pstmt.executeQuery();
 
@@ -115,7 +115,7 @@ public class InstructorDAO {
 			conn = SQLConnection.connect();
 			pstmt = conn.prepareStatement(sql);
 
-			pstmt.setString(1, this.loginInstructor);
+			pstmt.setString(1, Current.getInstance().getCurrent());
 
 			ResultSet rs = pstmt.executeQuery();
 
@@ -318,7 +318,7 @@ public class InstructorDAO {
 			conn = SQLConnection.connect();
 			pstmt = conn.prepareStatement(sql);
 
-			pstmt.setString(1, this.loginInstructor);
+			pstmt.setString(1, Current.getInstance().getCurrent());
 
 			ResultSet rs = pstmt.executeQuery();
 
@@ -373,7 +373,7 @@ public class InstructorDAO {
 
 		return subjectListWithTestInfo;
 	}
-	//배점 등
+	//배점 등록
 	public int addDistribution(Instructor i) {
 
 		int result1 = 0;
@@ -383,8 +383,7 @@ public class InstructorDAO {
 
 		String sql1 = "INSERT INTO test_ (testCode,openSubCode,testDate,testFile) VALUES (?,?,?,?)";
 
-		String sql2 = "INSERT INTO distribution_ (disCode , testCode , attDistribution , wriDistribution , pracDistribution) \n"
-				+ "VALUES ((SELECT NVL(LPAD(SUBSTR(MAX(disCode),4,3)+1, 6, 'DIV000'), 'DIV001') FROM distribution_), ?,?,?,?)";
+		String sql2 = "INSERT INTO distribution_ (disCode , testCode , attDistribution , wriDistribution , pracDistribution) VALUES ((SELECT NVL(LPAD(SUBSTR(MAX(disCode),4,3)+1, 6, 'DIV000'), 'DIV001') FROM distribution_), ?,?,?,?)";
 
 		Connection conn = null;
 		PreparedStatement pstmt0 = null;
@@ -511,7 +510,7 @@ public class InstructorDAO {
 		List<Instructor> subjectListByNumberOfStudent = new ArrayList<>();
 
 		// 과목코드 / 과목명 / 과목 시작일 / 과목 종료일 / 교재명/ 과정코드 / 과정명 / 과정 시작일 / 과정 종료일 / 강의실 / 등록인원
-		// / 상태
+		// 상태
 
 		String sql = "";
 
@@ -521,7 +520,7 @@ public class InstructorDAO {
 			conn = SQLConnection.connect();
 			pstmt = conn.prepareStatement(sql);
 
-			pstmt.setString(1, this.loginInstructor);
+			pstmt.setString(1, Current.getInstance().getCurrent());
 
 			ResultSet rs = pstmt.executeQuery();
 
@@ -567,6 +566,7 @@ public class InstructorDAO {
 
 	}
 
+	
 	public List<Instructor> scoreInfoByStudents(String openSubCode) {
 		List<Instructor> scoreInfoByStudents = new ArrayList<>();
 
@@ -625,6 +625,7 @@ public class InstructorDAO {
 		return scoreInfoByStudents;
 	}
 
+	//성적 추가
 	public int addScore(Instructor i) {
 
 		int result = 0;
@@ -672,7 +673,7 @@ public class InstructorDAO {
 		return result;
 	}
 
-	//성적 삭
+	//성적 삭제
 	public int deleteScore(String mid) {
 		int result = 0;
 
