@@ -1884,6 +1884,9 @@ public class AdminDAO {
     
 	// 3.1.1.2 수강생 보기
     // 중도 탈락문제
+	
+	public void test(String value) {
+	}
     
 	public List<Admin> studentDetailList(String value) {
     
