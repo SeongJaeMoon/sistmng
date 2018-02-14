@@ -60,6 +60,9 @@ public class Admin{
 	
 	private int count_; // 개설과정 등록 갯수
 	
+	
+	private int count_openSub; //개설 과목 등록 갯수
+	
 	private int count_studentHistory; // 과정등록인원
 	
 	
@@ -556,5 +559,13 @@ public class Admin{
 			}
 		}
 		return false;
+	}
+
+	public int getCount_openSub() {
+		return count_openSub;
+	}
+
+	public void setCount_openSub(int count_openSub) {
+		this.count_openSub = count_openSub;
 	}
 }
