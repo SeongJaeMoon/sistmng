@@ -694,6 +694,12 @@ public class AdminService {
 		}
 		
 	}
+
+	//개설 과목 관리
+	public void menu4(Scanner sc) {
+		// TODO Auto-generated method stub
+		
+	}
 	
 	
 	

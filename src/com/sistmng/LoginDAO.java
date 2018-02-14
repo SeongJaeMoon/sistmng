@@ -15,30 +15,44 @@ public class LoginDAO {
 		try {
 			conn = SQLConnection.connect();
 			pstmt = conn.prepareStatement(sql);
-			
+
 			pstmt.setString(1, m.getName());
 			pstmt.setString(2, m.getSsn());
-			
+
 			ResultSet rs = pstmt.executeQuery();
-			
-			while(rs.next()) {
+
+			while (rs.next()) {
+				
 				String mid = rs.getString("mid");
 				String name_ = rs.getString("name_");
 				String ssn = rs.getString("ssn");
 				String memberStatus = rs.getString("memberStatus");
+				
 				member = new Member();
 				member.setMid(mid);
 				member.setName(name_);
 				member.setSsn(ssn);
-				String status = null;
-				switch(memberStatus) {
-				case "A" : status = "관리자";break;
-				case "I" : status = "강사"; break;
-				case "S" : status = "수강생"; break;
+
+				String status = "";
+
+				switch (memberStatus) {
+				
+				case "A":
+					status = "관리자";
+				
+					break;
+				case "I":
+					
+					status = "강사";
+					break;
+				case "S":
+					
+					status = "수강생";
+					break;
 				}
 				member.setMemberStatus(status);
 			}
-			
+
 		} catch (SQLException se) {
 			se.printStackTrace();
 		} catch (Exception e) {
@@ -57,5 +71,5 @@ public class LoginDAO {
 		}
 		return member;
 	}
-	
+
 }

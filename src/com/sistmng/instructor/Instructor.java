@@ -17,8 +17,6 @@ public class Instructor {
 	// 과정코드(pk), 과정명
 	private String courseCode, courseName;
 	
-	
-	
 
 	// 강의실고유번호(pk), 강의실명
 	private String classCode, className;
