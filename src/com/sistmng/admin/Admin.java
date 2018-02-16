@@ -62,6 +62,25 @@ public class Admin{
 	
 	private int count_studentHistory; // 과정등록인원
 	
+	private String completionCheck; //수료여부
+	
+	private String checkDelOpenCourse; // 개설과정 삭제 가능 여부
+	
+	public String getCheckDelOpenCourse() {
+		return checkDelOpenCourse;
+	}
+
+	public void setCheckDelOpenCourse(String checkDelOpenCourse) {
+		this.checkDelOpenCourse = checkDelOpenCourse;
+	}
+
+	public String getCompletionCheck() {
+		return completionCheck;
+	}
+	
+	public void setCompletionCheck(String completionCheck) {
+		this.completionCheck = completionCheck;
+	}
 	
 	public String getInstStatus() {
 		return instStatus;

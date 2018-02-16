@@ -16,29 +16,36 @@ public class StudentDAO {
 	//private String nowDate = this.now.format(dateFormat);
 	
 	//회원정보출력
-	public Student menu_1(String mid) {
+	public Student menu_1() {
 
 		Student student = new Student();
+		/*
+		 SELECT COUNT(sh.mid) AS count_, m.name_, m.ssn, m.phone 
+		 FROM studentHistory_ sh, member_ m, student_ s
+		 WHERE sh.mid = s.mid
+		 AND s.mid = m.mid
+		 AND sh.mid = 'MEM007' GROUP BY  m.name_, m.ssn, m.phone ;
+		 */
 		Connection conn = null;
 		PreparedStatement pstmt = null;
-		String sql = "SELECT name_, ssn, phone FROM member_ WHERE mid = ?";
+		String sql = "SELECT COUNT(sh.mid) AS count_, m.name_, m.ssn, m.phone FROM studentHistory_ sh, member_ m, student_ s WHERE WHERE sh.mid = s.mid AND s.mid = m.mid AND sh.mid = ? GROUP BY  m.name_, m.ssn, m.phone";
+		
 		try {
 			conn = SQLConnection.connect();
 			pstmt = conn.prepareStatement(sql);
-			pstmt.setString(1, mid);
+			pstmt.setString(1,Current.getInstance().getCurrent());
 			
 			ResultSet rs = pstmt.executeQuery();
 			while(rs.next()) {
 				String name_ = rs.getString("name_");
 				String ssn = rs.getString("ssn");
 				String phone = rs.getString("phone");
-				
+				int courseNumber = rs.getInt("count");
 				student.setName_(name_);
 				student.setSsn(ssn);
 				student.setPhone(phone);
+				student.setCourseNumber(courseNumber);
 			}
-				//수강 횟수 계산 필요
-				student.setCourseNumber(this.getCourseNumber(mid));
 				
 			rs.close();
 		} catch (SQLException se) {
@@ -62,7 +69,7 @@ public class StudentDAO {
 	}
 	
 	//과정정보출력
-	public List<Student> menu_2(String mid) {
+	public List<Student> menu_2() {
 		List<Student>result = new ArrayList<Student>();
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -80,12 +87,12 @@ public class StudentDAO {
         AND co.courseCode = o.courseCode;
 		 */
 		
-		//과정코드 / 과정명 / 시작일 / 종료일 / 강의실 /수료
+		//과정코드 / 과정명 / 시작일 / 종료일 / 강의실 / 수료
 		String sql = "SELECT openCoCode, courseName, openCoStartDate, openCoCloseDate, className, NVL(failureDate, SYSDATE) AS failureDate FROM studentHistoryView WHERE mid = ?";
 		try {
 			conn = SQLConnection.connect();
 			pstmt = conn.prepareStatement(sql);
-			pstmt.setString(1, mid);
+			pstmt.setString(1, Current.getInstance().getCurrent());
 			
 			ResultSet rs = pstmt.executeQuery();
 			while(rs.next()) {
@@ -263,40 +270,5 @@ public class StudentDAO {
 		return result;
 	}
 	
-	//수강 횟수 계산
-	private int getCourseNumber(String mid) {
-		int result = 0;
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		String sql = "SELECT COUNT(*) AS mid FROM studentHistory_ WHERE mid = ?";
-		
-		try {
-			conn = SQLConnection.connect();
-			pstmt = conn.prepareStatement(sql);
-			
-			pstmt.setString(1, mid);
-			
-			ResultSet rs = pstmt.executeQuery();
-			while(rs.next()) {
-				result = rs.getInt("mid");
-			}
-			
-		} catch (SQLException se) {
-			se.printStackTrace();
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (pstmt != null)
-					pstmt.close();
-			} catch (SQLException se) {
-			}
-			try {
-				SQLConnection.close();
-			} catch (SQLException se) {
-				se.printStackTrace();
-			}
-		}
-		return result;
-	}
+
 }

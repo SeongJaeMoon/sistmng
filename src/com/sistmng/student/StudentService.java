@@ -10,7 +10,7 @@ public class StudentService {
 	
 	public void menu_1() {
 		System.out.println("");
-		Student student = this.dao.menu_1(Current.getInstance().getCurrent());
+		Student student = this.dao.menu_1();
 		System.out.printf("이름: %s%n",student.getName_());
 		System.out.printf("주민번호: %s%n", student.getSsn());
 		System.out.printf("전화번호: %s%n", student.getPhone());
@@ -18,7 +18,7 @@ public class StudentService {
 	}
 	
 	public void menu_2(Scanner sc) {
-		List<Student> studentList = this.dao.menu_2(Current.getInstance().getCurrent());
+		List<Student> studentList = this.dao.menu_2();
 		System.out.println("성적을 조회합니다.");
 		if(studentList.size() == 0) {
 			System.out.println("조회된 정보가 없습니다.");
@@ -34,11 +34,8 @@ public class StudentService {
 			System.out.print("선택 > ");
 			int input = sc.nextInt();
 			switch (input) {
-			case 1:
-				this.menu_21(sc);
-				break;
-			case 0:
-				break;
+			case 1:this.menu_21(sc);break;
+			case 0:break;
 			}
 		}
 	}

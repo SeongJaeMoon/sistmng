@@ -25,7 +25,7 @@ public void adminMain(Scanner sc) {
 		case 1: service.basicInfoMenu(sc); break;
 		case 2: service.InstructorMenu(sc); break;
 		case 3: break;
-		case 4: break;
+		case 4: service.openSubjectMenu(sc);break;
 		case 5: break;
 		case 6: break;
 			}
