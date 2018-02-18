@@ -66,6 +66,37 @@ public class Admin{
 	
 	private String checkDelOpenCourse; // 개설과정 삭제 가능 여부
 	
+	private int courseCount; //수강횟수
+	
+	private int num; //번호부여 변수
+	
+	private int count_openSub; //개설 과목 등록 갯수
+	
+
+	public int getCount_openSub() {
+		return count_openSub;
+	}
+
+	public void setCount_openSub(int count_openSub) {
+		this.count_openSub = count_openSub;
+	}
+
+	public int getCourseCount() {
+		return courseCount;
+	}
+
+	public void setCourseCount(int courseCount) {
+		this.courseCount = courseCount;
+	}
+
+	public int getNum() {
+		return num;
+	}
+
+	public void setNum(int num) {
+		this.num = num;
+	}
+
 	public String getCheckDelOpenCourse() {
 		return checkDelOpenCourse;
 	}

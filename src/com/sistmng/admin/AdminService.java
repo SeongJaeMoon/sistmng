@@ -1,5 +1,6 @@
 package com.sistmng.admin;
 
+import java.time.LocalDate;
 import java.util.*;
 
 public class AdminService {
@@ -709,12 +710,144 @@ public class AdminService {
 	//-----------------------------------------------
 	
 	//3. 개설 과정 관리
-	//3.1 개설 과정 출력
-	//3.1.1 개설 과정 상세보기
-	//3.1.1.1 과목 상세보기
-	//3.1.1.2 수강생 보기
 	
-	//3.2 개설 과정 등록
+		public void openCourseMenu(Scanner sc) {
+		
+			boolean run = true;
+			
+			while(run) {
+				
+			System.out.println("------------------------------------------");
+			System.out.println("1.개설 과정 출력 2.개설 과정 등록 3.개설 과정 삭제 0.종료");
+			System.out.println("------------------------------------------");
+			
+			int num = sc.nextInt();
+			sc.nextLine();
+			
+			switch(num) {
+			
+			case 0 : run=false; break;
+			case 1: this.openCourseList(sc); break;
+			case 2: this.openCourseAdd(sc);break;
+			case 3: break;
+			
+			}
+				
+			}
+			
+		}
+		
+		//3.1 개설 과정 출력
+		private void openCourseList(Scanner sc) {
+			System.out.println("------------------------------------------");
+			System.out.println("개설 과정 코드 / 개설 과정 명 / 개설 과정 기간 / 강의실명 / 개설 과목 등록 갯 수 / 수강생 인원");
+			System.out.println("------------------------------------------");
+			List<Admin> list = dao.openCourseList();
+			for(Admin a : list) {
+				System.out.printf("%s %s %s~%s %s %s %s %n",a.getOpenCoCode(),a.getCourseName(),a.getOpenCoStartDate(),a.getOpenCoCloseDate(),a.getClassName(),a.getCount_(),a.getCount_studentHistory());
+			}
+			System.out.println("------------------------------------------");
+			System.out.println("1.상세보기 0.나가기");
+			int selectNo = sc.nextInt();
+			sc.nextLine();
+			System.out.println("개설과정코드 >");
+			String value = sc.next();
+			switch(selectNo) {
+			  case 1 : this.openCourseDetailList(sc, value);break;
+			  case 0 : break;
+			}
+		}
+		
+		
+		//3.1.1 개설 과정 상세보기
+		private void openCourseDetailList(Scanner sc, String value) {
+			List<Admin> list = dao.openCourseDetailList(value);
+			
+			if(list.size()<=0) {
+				System.out.println("존재하지 않는 코드입니다.");
+			}else {
+				System.out.println("------------------------------------------");
+				System.out.println("개설 과정 코드 / 개설 과정 명 / 개설 과정 기간 / 강의실명");
+				System.out.println("------------------------------------------");
+				for(Admin a : list) {
+				System.out.printf("%s %s %s ~ %s %s %n",a.getOpenCoCode(),a.getCourseName(),a.getOpenCoStartDate(),a.getOpenCoCloseDate(),a.getClassName());
+				}
+				System.out.println("------------------------------------------");
+				System.out.println("1.과목 상세보기 2.수강생 상세보기 0.나가기");
+				int selectNo = sc.nextInt();
+				sc.nextLine();
+				switch(selectNo) {
+				  case 1 : this.subjectDetailList(value);break;
+				  case 2 : this.studentDetailList(value);break;
+				  case 0 : break;
+				}
+			}
+		}
+		
+		//3.1.1.1 과목 상세보기
+		private void subjectDetailList(String value) {
+			List<Admin> list = dao.subjectDetailList(value);
+			System.out.println("------------------------------------------");
+			System.out.println("개설 과목 명 / 개설 과목 기간 / 교재명 / 강사명");
+			System.out.println("------------------------------------------");
+			for(Admin a : list) {
+				System.out.printf("%s %s %s ~ %s %s %n",a.getSubjectName(),a.getOpenSubStartDate(),a.getOpenSubCloseDate(),a.getBookName(),a.getName_());
+				}
+			System.out.println("------------------------------------------");
+		}
+		
+		
+		//3.1.1.2 수강생 보기
+		private void studentDetailList(String value) {
+			List<Admin> list = dao.studentDetailList(value);
+			System.out.println("------------------------------------------");
+			System.out.println("수강생 / 주민번호 뒷자리 / 전화번호 / 수강생 등록일 / 수료일");
+			System.out.println("------------------------------------------");
+			for(Admin a : list) {
+				System.out.printf("%s %s %s %s %s %n",a.getName_(),a.getSsn(),a.getPhone(),a.getSstudentRegDate(),a.getCompletionCheck());
+				}
+			System.out.println("------------------------------------------");
+		}		
+		
+		//3.2 개설 과정 등록
+		private void openCourseAdd(Scanner sc) {
+			
+			List<Admin> list = dao.courseList();
+			
+			int ab = 0;
+			
+			String classCodeSc = sc.next();
+			
+			System.out.println("------------------------------------------");
+			System.out.println("과정코드 / 과정명");
+			System.out.println("------------------------------------------");
+			
+			for(Admin a : list) {
+				System.out.printf("%s %s %n",a.getCourseCode(), a.getCourseName());
+				}
+			
+			System.out.println("------------------------------------------");
+			System.out.println("개설 과정 코드 >");
+			String value = sc.next();
+			
+			for(Admin a : list) {
+				if(a.getCourseCode().equals(value)) {
+					
+					Admin m = new Admin();
+					System.out.println("개설 과정 시작일>");
+					String openCoStartDate = sc.next();
+					System.out.println("개설 과정 종료일>");
+				    String oepnCoCloseDate = sc.next();
+				    m.setOpenCoCode(value);
+				    m.setOpenCoStartDate(LocalDate.parse(openCoStartDate));
+				    m.setOpenCoCloseDate(LocalDate.parse(oepnCoCloseDate));
+				    
+				    ab = dao.openCourseAdd(m);
+				    return;
+				}
+			}
+			System.out.println("존재 하지 않는 과정입니다.");
+		}
 	//3.3 개설 과정 삭제
 	
 	//-----------------------------------------------
@@ -859,26 +992,915 @@ public class AdminService {
 		}	
 	}
 	//-----------------------------------------------
-	
-	//5. 수강생 관리
 	//5.1 수강생 등록
-	//5.2 수강생 출력(중도탈락 관리)
-	//5.3 수강생 과정 등록
-	//5.4 수강생 삭제
-	//5.4.1 수강생 과정 삭제
-	//5.4.2 수강생 삭제
+		public void Admin_5_1(Scanner sc) {
+			
+			System.out.print("검색하실 수강생의 이름을 입력해 주세요 > ");
+			String name_ = sc.next();
+			System.out.print("검색하실 수강생의 주민등록번호 뒷자리를 입력하세요 > ");
+			String ssn = sc.next();
+			System.out.print("검색하실 수강생의 전화번호를 입력하세요. > ");
+			String phone = sc.next();
+			
+			
+			List<Admin>list = this.dao.studentAddSearch(name_,ssn,phone);
+			
+			if(list.size() <= 0) {
+				System.out.print("검색결과가 존재하지 않습니다. 신규등록 하시겠습니까? (Y/N) > ");
+				
+				String yn1 = sc.next();
+				
+				if(yn1.equalsIgnoreCase("y")) {
+					System.out.print("등록하실 수강생의 이름을 입력하세요. > ");
+					String name2_ = sc.next();
+					
+					System.out.print("등록하실 수강생의 주민등록번호 뒷자리를 입력하세요. > ");
+					String ssn2 = sc.next();
+					
+					System.out.print("등록하실 전화번호를 입력해 주세요> ");
+					String phone2 = sc.next();
+					
+					this.dao.studentAdd(name2_, ssn2, phone2);
+					
+					System.out.println("개설 과정을 등록하시겠습니까? (Y/N)");
+					
+					String yn2 = sc.next();
+					
+					
+					if(yn2.equalsIgnoreCase("y")) {
+						
+						System.out.println("---------------------------------------------------------------------------");
+						System.out.println("개설과정코드 / 과정명 / 과정코드 / 강의실고유번호 / 과정시작일 / 과정종료일");
+						System.out.println("---------------------------------------------------------------------------");
+						
+						//개설과정 리스트
+						List<Admin>list2 = this.dao.openCourseAddList(); 
+						
+						for(Admin m : list2) {
+							System.out.printf("%s / %s / %s / %s / %s / %s %n",m.getOpenCoCode(),m.getCourseName(),m.getCourseCode(),m.getClassCode(),m.getOpenCoStartDate(),m.getOpenCoCloseDate() );
+						}
+						
+						System.out.print("등록하실 개설과정 코드를 입력해 주세요. > ");
+						String openCoCode = sc.next();
+						//개설과정 등록
+						this.dao.studentOpenCourseAdd(openCoCode);
+						
+						System.out.printf("[ %s ] 수강생 등록이 완료되었습니다.",name2_);
+						
+						
+					} else if(yn2.equalsIgnoreCase("n")) {
+						System.out.printf("[ %s ] 수강생 등록이 완료되었습니다.",name2_);
+						return;
+					} else {
+						System.out.println("잘못된 입력입니다.");
+						return;
+					}
+					
+					} else if(yn1.equalsIgnoreCase("n")) {
+						return;
+					} else {
+						System.out.println("잘못된 입력입니다.");
+						return;
+					}
+
+			} else if(list.size() > 0 ) {
+				System.out.printf("[ %d 건의 결과가 존재합니다. ]",list.size());
+				System.out.println("-----------------------------------------------------------------------------");
+				System.out.println("회원고유번호 / 이름 / 주민번호 / 전화번호 / 회원등록일 / 등록과정 / 수강횟수 ");
+				System.out.println("-----------------------------------------------------------------------------");
+				for(Admin m : list) {
+					System.out.printf("%s / %s / %s / %s / %s / %s / %d %n",m.getMid(),m.getName_(),m.getSsn(),m.getPhone(),m.getMemberRegDate(),m.getCourseName(),m.getCourseCount());
+				}
+				
+				System.out.println("개설 과정을 등록하시겠습니까? (Y/N)");
+				
+				String yn3 = sc.next();
+				
+				if(yn3.equalsIgnoreCase("y")) {
+					
+					System.out.println("---------------------------------------------------------------------------");
+					System.out.println("개설과정코드 / 과정명 / 과정코드 / 강의실고유번호 / 과정시작일 / 과정종료일");
+					System.out.println("---------------------------------------------------------------------------");
+					
+					//개설과정 리스트
+					List<Admin>list2 = this.dao.openCourseAddList(); 
+					
+					for(Admin m : list2) {
+						System.out.printf("%s / %s / %s / %s / %s / %s %n",m.getOpenCoCode(),m.getCourseName(),m.getCourseCode(),m.getClassCode(),m.getOpenCoStartDate(),m.getOpenCoCloseDate() );
+					}
+					
+					System.out.print("등록하실 개설과정 코드를 입력해 주세요. > ");
+					String openCoCode = sc.next();
+					//개설과정 등록
+					this.dao.studentOpenCourseAdd(openCoCode);
+					
+					System.out.printf("[ %s ] 수강생 등록이 완료되었습니다.",name_);
+					
+					
+				} else if(yn3.equalsIgnoreCase("n")) {
+					return;
+				} else {
+					System.out.println("잘못된 입력입니다.");
+					return;
+				}
+				
+				}
+				
+			
+			
+			
+		}
+		
+		//5.2 수강생 출력(중도탈락 관리)
+		
+		public void Admin_5_2(Scanner sc) {
+			
+			System.out.println("-------------------------------------");
+			System.out.println("1. 이름검색 2. 전화번호 검색 0.나가기");
+			System.out.println("-------------------------------------");
+			
+			boolean run = true;
+			
+			System.out.print("선택 >");
+			int a = sc.nextInt();
+			sc.nextLine();
+			
+			while(run) {
+				
+				
+				switch(a) {
+				
+				case 1 : 
+					System.out.print("검색하실 수강생의 이름을 입력해 주세요 > ");
+					
+					String name_ = sc.next();
+						List<Admin>list1 = this.dao.studentCourseCountList("이름", name_);
+						
+						if(list1.size()>0) {
+							//courseCount = 수강횟수
+							System.out.println("-----------------------------------------------------------------");
+							System.out.println("회원고유번호 / 이름 / 주민번호 / 전화번호 / 회원등록일 / 수강횟수");
+							System.out.println("-----------------------------------------------------------------");
+							for(Admin m : list1) {
+								System.out.printf("%s / %s / %s / %s / %s / %d %n",m.getMid(),m.getName_(),m.getSsn(),m.getPhone(),m.getMemberRegDate(),m.getCourseCount());
+							
+							}
+							
+							System.out.print("상세보기 할 수강생의 고유번호를 입력해주세요. >");
+							String mid = sc.next();
+
+							List<Admin>list2 = this.dao.studentCourseCountList("mid", mid);
+							for(Admin m : list2) {
+								System.out.printf("[ %s / %s / %s / %s / %s / %d ]%n",m.getMid(),m.getName_(),m.getSsn(),m.getPhone(),m.getMemberRegDate(),m.getCourseCount());
+							
+							}
+							
+							
+							System.out.println("------------------------------------------------------------------");
+							System.out.println("번호 / 과정코드 / 과정명 / 과정시작일 / 과정종료일 / 강의실 / 수료");
+							System.out.println("------------------------------------------------------------------");
+							
+							List<Admin>list3 = this.dao.studentDetailCourseCountList(mid);
+							
+							for(Admin m1 : list3) {
+								System.out.printf("%d / %s / %s %s / %s / %s %n", m1.getNum(),m1.getOpenCoCode(),m1.getCourseName(),m1.getOpenCoStartDate(),m1.getOpenCoCloseDate(),m1.getClassName(),m1.getCompletionCheck());
+							}
+							
+							System.out.print("1. 중도탈락 설정 0. 나가기");
+							switch(a) {
+							
+							case 1 : 
+								System.out.print("수료 상태를 변경할 과정코드를 입력해주세요 > ");
+								String openCoCode = sc.next();
+								System.out.print("중도탈락 날짜를 입력해 주세요");
+								String date = sc.next();
+								
+								String yn = sc.next();
+								System.out.print("정말로 변경하시겠습니까? (Y/N)");
+								
+								if(yn.equalsIgnoreCase("y")) {
+									
+									
+									
+									this.dao.dropOut(openCoCode, date);
+									
+									for(Admin m1 : list3) {
+										
+										System.out.printf("[ %s / %s ] 수강생은 [ %s / %s ]에서 중도탈락 되었습니다.", m1.getMid(),m1.getName_(),m1.getOpenCoCode(),m1.getCourseName());
+									}
+									
+									
+								} else if(yn.equalsIgnoreCase("n")) {
+									
+								} else {
+									System.out.println("잘못된 입력입니다.");
+									return;
+								}
+							case 0 : run=false; break;
+							
+							}
+							
+						} else {
+							System.out.println("검색 결과가 없습니다.");
+						}
+						
+						break;
+						
+						
+				case 2 : 
+					System.out.print("검색하실 수강생의 이름을 입력해 주세요 > ");
+					String phone = sc.next();
+						List<Admin>list2 = this.dao.studentCourseCountList("전화번호", phone);
+						
+						if(list2.size()>0) {
+							//courseCount = 수강횟수
+							
+							for(Admin m : list2) {
+								System.out.printf("%s / %s / %s / %s / %s / %d %n",m.getMid(),m.getName_(),m.getSsn(),m.getPhone(),m.getMemberRegDate(),m.getCourseCount());
+							
+							}
+							
+							System.out.print("상세보기 할 수강생의 고유번호를 입력해주세요. >");
+							String mid = sc.next();
+							
+							Admin m = new Admin();
+							m.setMid(mid);
+							
+							System.out.printf("[%s / %s / %s / %s ]%n",m.getMid(),m.getName_(),m.getSsn(),m.getPhone(),m.getMemberRegDate());
+							
+							System.out.println("------------------------------------------------------------------");
+							System.out.println("번호 / 과정코드 / 과정명 / 과정시작일 / 과정종료일 / 강의실 / 수료");
+							System.out.println("------------------------------------------------------------------");
+							
+							List<Admin>list3 = this.dao.studentDetailCourseCountList(mid);
+							
+							for(Admin m1 : list3) {
+								System.out.printf("%s / %s / %s %s / %s / %s %n", m1.getNum(),m1.getOpenCoCode(),m1.getCourseName(),m.getOpenCoStartDate(),m.getOpenCoCloseDate(),m.getClassName(),m.getCompletionCheck());
+							}
+							
+							System.out.print("1. 중도탈락 설정 0. 나가기");
+							switch(a) {
+							
+							case 1 : 
+								System.out.print("수료 상태를 변경할 과정코드를 입력해주세요 > ");
+								String openCoCode = sc.next();
+								System.out.print("중도탈락 날짜를 입력해 주세요");
+								String date = sc.next();
+								
+								String yn = sc.next();
+								System.out.print("정말로 변경하시겠습니까? (Y/N)");
+								
+								if(yn.equalsIgnoreCase("y")) {
+									
+									
+									
+									this.dao.dropOut(openCoCode, date);
+									
+									for(Admin m1 : list3) {
+										
+										System.out.printf("[ %s / %s ] 수강생은 [ %s / %s ]에서 중도탈락 되었습니다.", m1.getMid(),m1.getName_(),m1.getOpenCoCode(),m1.getCourseName());
+									}
+									
+									
+								} else if(yn.equalsIgnoreCase("n")) {
+									
+								} else {
+									System.out.println("잘못된 입력입니다.");
+									return;
+								}
+							case 0 : run=false; break;
+							
+							}
+							
+						} else {
+							System.out.println("검색 결과가 없습니다.");
+						}
+						
+						break;
+						
+				case 0: run=false; break;
+				
+				}
+				
+			}
+				
+				
+		}
+		
+
+			
+		
+		
+		//5.3 수강생 과정 등록
+		public void Admin_5_3(Scanner sc) {
+			
+			System.out.println("-------------------------------------");
+			System.out.println("1. 이름검색 2. 전화번호 검색 0.나가기");
+			System.out.println("-------------------------------------");
+			
+			boolean run = true;
+			
+			System.out.print("선택 >");
+			int a = sc.nextInt();
+			sc.nextLine();
+			
+			while(run) {
+				
+				switch(a) {
+				
+				case 1: 
+					
+					System.out.print("검색하실 수강생의 이름을 입력해주세요. > ");
+					String name_ = sc.next();
+					
+					List<Admin>list1 = this.dao.studentNoAddCourseList("이름", name_);
+					
+					System.out.println("----------------------------------------------------------------------------");
+					System.out.println("회원고유번호 / 이름 / 주민번호 / 전화번호 / 회원등록일 / 등록과정 / 수강횟수");
+					System.out.println("----------------------------------------------------------------------------");
+					
+					for(Admin m : list1) {
+						System.out.printf("%s / %s / %s / %s / %s / %s / %d %n",m.getMid(),m.getName_(),m.getSsn(),m.getPhone(),m.getMemberRegDate(),m.getCourseName(),m.getCourseCount());
+					}
+					
+					System.out.println("1.과정등록 0. 나가기");
+					
+					switch(a) {
+						
+					case 1 : 
+						System.out.print("등록하실 회원번호를 입력해주세요 > ");
+						String mid = sc.next();
+						
+						System.out.println("[등록 가능한 개설 과정]");
+						
+						List<Admin>list3 = this.dao.studentCourseAddList(mid);
+						
+						System.out.println("---------------------------------------------------------------------------");
+						System.out.println("개설과정코드 / 과정명 / 과정코드 / 강의실고유번호 / 과정시작일 / 과정종료일");
+						System.out.println("---------------------------------------------------------------------------");
+						
+						for (Admin m : list3) {
+							System.out.printf("%s / %s / %s / %s / %s / %s %n",m.getOpenCoCode(),m.getCourseName(),m.getCourseCode(),m.getClassCode(),m.getOpenCoStartDate(),m.getOpenCoCloseDate() );
+						}
+						
+						
+						
+						System.out.println("1. 과정등록 0. 나가기");
+						
+						switch(a) {
+						
+						case 0 : run=false; break;
+						
+						case 1 :
+							System.out.print("등록하실 과정코드를 입력해 주세요 > ");
+							String openCoCode = sc.next();
+							
+							List<Admin>addList = this.dao.studentCourseAddAskList(mid, openCoCode);
+							for (Admin m : addList) {
+							System.out.printf("[ %s / %s ] 수강생을 [ %s / %s / %s / %s ] 과정에 추가하시겠습니까? (Y/N) > ",m.getMid(),m.getName_(),m.getOpenCoCode(),m.getCourseName(),m.getOpenCoStartDate(),m.getOpenCoCloseDate() );
+							}
+							String yn = sc.next();
+							
+							if(yn.equalsIgnoreCase("y")) {
+								
+								this.dao.studentCourseAdd(openCoCode);
+								
+								
+								for (Admin m : addList) {
+									System.out.printf("[ %s / %s ] 수강생이 정상적으로 [ %s / %s / %s / %s ] 과정에 추가되었습니다. %n",m.getMid(),m.getName_(),m.getOpenCoCode(),m.getCourseName(),m.getOpenCoStartDate(),m.getOpenCoCloseDate() );
+									}
+								
+							} else if (yn.equalsIgnoreCase("n")){
+								return;
+							} else {
+								System.out.println("잘못된 입력입니다.");
+								return;
+							}
+						}
+						
+						
+						break;
+					case 0 : run=false; break;
+					
+					}
+					
+				case 2 :
+					
+					System.out.print("검색하실 수강생의 전화번호를 입력해주세요. > ");
+					String phone = sc.next();
+					
+					List<Admin>list2 = this.dao.studentNoAddCourseList("전화번호", phone);
+					
+					System.out.println("----------------------------------------------------------------------------");
+					System.out.println("회원고유번호 / 이름 / 주민번호 / 전화번호 / 회원등록일 / 등록과정 / 수강횟수");
+					System.out.println("----------------------------------------------------------------------------");
+					
+					for(Admin m : list2) {
+						System.out.printf("%s / %s / %s / %s / %s / %s / %d %n",m.getMid(),m.getName_(),m.getSsn(),m.getPhone(),m.getMemberRegDate(),m.getCourseName(),m.getCourseCount());
+					}
+					
+					System.out.println("1.과정등록 0. 나가기");
+					
+					switch(a) {
+					
+					case 1 : 
+						System.out.print("등록하실 회원번호를 입력해주세요 > ");
+						String mid = sc.next();
+						
+						System.out.println("[등록 가능한 개설 과정]");
+						
+						List<Admin>list3 = this.dao.studentCourseAddList(mid);
+						
+						System.out.println("---------------------------------------------------------------------------");
+						System.out.println("개설과정코드 / 과정명 / 과정코드 / 강의실고유번호 / 과정시작일 / 과정종료일");
+						System.out.println("---------------------------------------------------------------------------");
+						
+						for (Admin m : list3) {
+							System.out.printf("%s / %s / %s / %s / %s / %s %n",m.getOpenCoCode(),m.getCourseName(),m.getCourseCode(),m.getClassCode(),m.getOpenCoStartDate(),m.getOpenCoCloseDate() );
+						}
+						
+						
+						System.out.println("1. 과정등록 0. 나가기");
+						
+						switch(a) {
+						
+						
+						case 1 :
+							System.out.print("등록하실 과정코드를 입력해 주세요 > ");
+							String openCoCode = sc.next();
+							
+							List<Admin>addList = this.dao.studentCourseAddAskList(mid, openCoCode);
+							for (Admin m : addList) {
+							System.out.printf("[ %s / %s ] 수강생을 [ %s / %s / %s / %s ] 과정에 추가하시겠습니까? (Y/N) > ",m.getMid(),m.getName_(),m.getOpenCoCode(),m.getCourseName(),m.getOpenCoStartDate(),m.getOpenCoCloseDate() );
+							}
+							String yn = sc.next();
+							
+							if(yn.equalsIgnoreCase("y")) {
+								
+								this.dao.studentCourseAdd(openCoCode);
+								
+								
+								for (Admin m : addList) {
+									System.out.printf("[ %s / %s ] 수강생이 정상적으로 [ %s / %s / %s / %s ] 과정에 추가되었습니다. %n",m.getMid(),m.getName_(),m.getOpenCoCode(),m.getCourseName(),m.getOpenCoStartDate(),m.getOpenCoCloseDate() );
+									}
+								
+							} else if (yn.equalsIgnoreCase("n")){
+								return;
+							} else {
+								System.out.println("잘못된 입력입니다.");
+								return;
+							}
+						case 0 : run=false; break;
+						}
+						
+						
+						break;
+					case 0 : run=false; break;
+					
+					}
+					
+					
+				case 0 : run=false; break;
+				
+				}
+				
+			}
+
+			
+		}
+		
+		
+		//5.4 수강생 삭제
+		public void Admin_5_4(Scanner sc) {
+			
+			System.out.println("-----------------------------------------");
+			System.out.println("1.수강생 과정 취소 2.수강생 삭제 0.나가기");
+			System.out.println("-----------------------------------------");
+			
+			boolean run = true;
+			
+			while(run) {
+				
+				int a = sc.nextInt();
+				sc.nextLine();
+				
+				switch(a) {
+				
+				case 1 : Admin_5_4_1(sc);break;
+				case 2 : Admin_5_4_2(sc);break;
+				case 0 : run=false; break;
+				
+				
+				}
+				
+			}
+			
+			
+		}
+		
+		
+		//5.4.1 수강생 과정 취소
+		
+		public void Admin_5_4_1(Scanner sc) {
+			
+			System.out.println("1.이름검색 2.전화번호");
+			
+			boolean run = true;
+			
+			int a = sc.nextInt();
+			sc.nextLine();
+			
+			while(run) {
+				
+				switch(a) {
+				
+				case 1 : 
+					System.out.print("검색하실 수강생의 이름을 입력하세요 > ");
+					String name_ = sc.next();
+					
+					List<Admin>list1 = this.dao.studentDeleteCourseList("이름",name_);
+					
+					System.out.println("----------------------------------------------------------------------------");
+					System.out.println("회원고유번호 / 이름 / 주민번호 / 전화번호 / 회원등록일 / 등록과정 / 수강횟수");
+					System.out.println("----------------------------------------------------------------------------");
+					
+					for(Admin m : list1) {
+						System.out.printf("%s / %s / %s / %s / %s / %s / %d %n", m.getMid(),m.getName_(),m.getSsn(),m.getPhone(),m.getMemberRegDate(),m.getCourseName(),m.getCourseCount());
+					}
+					
+					System.out.print("과정을 삭제하실 수강생의 고유번호를 입력하세요. > ");
+					
+					String mid = sc.next();
+					String yn = sc.next();
+					
+					System.out.printf("[ %s / %s ] 학생의 과정을 삭제하시겠습니까?(Y/N)", mid,name_);
+					
+					if(yn.equalsIgnoreCase("y")) {
+						
+						this.dao.studentCourseDelete(mid);
+						
+						System.out.printf("[ %s / %s ] 학생의 과정이 삭제되었습니다.", mid,name_);
+						
+					} else if (yn.equalsIgnoreCase("n")) {
+						return;
+					} else {
+						System.out.println("잘못된 입력입니다.");
+					}
+					
+					
+					
+					break;
+				case 2 :
+					System.out.print("검색하실 수강생의 전화번호를 입력하세요 > ");
+					String phone = sc.next();
+					
+					List<Admin>list2 = this.dao.studentDeleteCourseList("전화번호",phone);
+					
+					System.out.println("----------------------------------------------------------------------------");
+					System.out.println("회원고유번호 / 이름 / 주민번호 / 전화번호 / 회원등록일 / 등록과정 / 수강횟수");
+					System.out.println("----------------------------------------------------------------------------");
+					
+					for(Admin m : list2) {
+						System.out.printf("%s / %s / %s / %s / %s / %s / %d %n", m.getMid(),m.getName_(),m.getSsn(),m.getPhone(),m.getMemberRegDate(),m.getCourseName(),m.getCourseCount());
+					}
+					
+					System.out.print("과정을 삭제하실 수강생의 고유번호를 입력하세요. > ");
+					
+					String mid1 = sc.next();
+					String yn1 = sc.next();
+					
+					Admin m = new Admin();
+					
+					m.setMid(mid1);
+					
+					System.out.printf("[ %s / %s ] 학생의 과정을 삭제하시겠습니까?(Y/N)", mid1,m.getName_());
+					
+					if(yn1.equalsIgnoreCase("y")) {
+						
+						this.dao.studentCourseDelete(mid1);
+						
+						System.out.printf("[ %s / %s ] 학생의 과정이 삭제되었습니다.", mid1,m.getName_());
+						
+					} else if (yn1.equalsIgnoreCase("n")) {
+						return;
+					} else {
+						System.out.println("잘못된 입력입니다.");
+					}
+					
+					break;
+				}
+				
+			}
+			
+			
+		}
+		
+		
+		//5.4.2 수강생 삭제
+		
+		public void Admin_5_4_2(Scanner sc) {
+			
+			boolean run = true;
+			
+			int a = sc.nextInt();
+			sc.nextLine();
+			
+			while(run) {
+				
+				System.out.println("---------------------------");
+				System.out.println("1.이름 검색 2.전화번호 검색");
+				System.out.println("---------------------------");
+				
+				switch(a) {
+				
+				case 1 : 
+					System.out.print("검색하실 수강생의 이름을 입력하세요 > ");
+					String name_ = sc.next();
+					
+					List<Admin>list1 = this.dao.studentList("이름",name_);
+					
+					System.out.println("[삭제 가능한 회원 목록]");
+					System.out.println("----------------------------------------------------------------------------");
+					System.out.println("회원고유번호 / 이름 / 주민번호 / 전화번호 / 회원등록일 / 등록과정 / 수강횟수");
+					System.out.println("----------------------------------------------------------------------------");
+					
+					for (Admin m : list1) {
+						System.out.printf("%s / %s / %s / %s / %s / %s / %d %n",m.getMid(),m.getName_(),m.getSsn(),m.getPhone(),m.getMemberRegDate(),m.getCourseName(),m.getCourseCount() );
+					}
+					
+					System.out.print("삭제하실 수강생의 고유번호를 입력해주세요 > ");
+					String mid = sc.next();
+					
+					System.out.printf("[ %s / %s ]수강생의 정보를 삭제하시겠습니까? (Y/N)", mid,name_);
+					String yn = sc.next();
+					
+					if(yn.equalsIgnoreCase("y")) {
+						this.dao.studentDelete(mid);
+						System.out.printf("[ %s / %s ]수강생이 삭제되었습니다.", mid,name_);
+						
+					} else if (yn.equalsIgnoreCase("n")) {
+						return;
+					} else {
+						System.out.println("잘못된 입력입니다.");
+						return;
+					}
+
+				break;
+				case 2 : 
+					
+					System.out.print("검색하실 수강생의 전화번호를 입력하세요 > ");
+					String phone = sc.next();
+					
+					List<Admin>list2 = this.dao.studentList("전화번호",phone);
+					
+					System.out.println("[삭제 가능한 회원 목록]");
+					System.out.println("----------------------------------------------------------------------------");
+					System.out.println("회원고유번호 / 이름 / 주민번호 / 전화번호 / 회원등록일 / 등록과정 / 수강횟수");
+					System.out.println("----------------------------------------------------------------------------");
+					
+					for (Admin m : list2) {
+						System.out.printf("%s / %s / %s / %s / %s / %s / %d %n",m.getMid(),m.getName_(),m.getSsn(),m.getPhone(),m.getMemberRegDate(),m.getCourseName(),m.getCourseCount() );
+					}
+					
+					System.out.print("삭제하실 수강생의 고유번호를 입력해주세요 > ");
+					String mid1 = sc.next();
+					
+					Admin m = new Admin();
+					
+					m.setMid(mid1);
+					
+					System.out.printf("[ %s / %s ]수강생의 정보를 삭제하시겠습니까? (Y/N)", mid1,m.getName_());
+					String yn1 = sc.next();
+					
+					if(yn1.equalsIgnoreCase("y")) {
+						this.dao.studentDelete(mid1);
+						System.out.printf("[ %s / %s ]수강생이 삭제되었습니다.", mid1,m.getName_());
+						
+					} else if (yn1.equalsIgnoreCase("n")) {
+						return;
+					} else {
+						System.out.println("잘못된 입력입니다.");
+						return;
+					}
+					
+				break;
+				
+				
+				}
+				
+			}
+	}
+
 	
 	//-----------------------------------------------
-	
-	//6. 성적 조회
-	//6.1 개설 과정 보기
-	//6.1.1 상세보기
-	//6.1.1.1 과목별 성적 보기
-	//6.2 수강생 검색
-	//6.2.1 상세보기 (과정)
-	//6.2.1.1 상세보기(과목)
-	//6.3 성적 정보
-	//6.3.2 이름검색
-	//6.3.3 시험코드 검색
+		private void menu_6(Scanner sc) {
+			boolean run = true;
+
+			while (run) {
+
+				System.out.println(
+						"----------------------------------------------------------------------------------------------------");
+				System.out.println("1. 개설 과정별로 보기 2.수강생별로 보기 0.나가기");
+				System.out.println(
+						"----------------------------------------------------------------------------------------------------");
+
+				int num = sc.nextInt();
+				sc.nextLine();
+
+				switch (num) {
+
+				case 0:
+					run = false;
+					break;
+				case 1:
+					this.menu_61(sc);
+					break;
+				case 2:
+					this.menu_62(sc);
+					break;
+				}
+			}
+
+		}
+
+		private void menu_61(Scanner sc) {
+
+			while (true) {
+
+				List<Admin> openCoView = this.dao.openCoView();
+
+				System.out.println(
+						"-------------------------------------------------------------------------------------------------");
+				System.out.println("개설과정코드 / 과정명 / 과정시작일 / 과정종료일 / 과목 등록 갯수 / 수강생 등록 인원 / 강의실명 ");
+				System.out.println(
+						"-------------------------------------------------------------------------------------------------");
+
+				for (Admin a : openCoView) {
+					System.out.printf("%s / %s / %s / %s / %d / %d / %s%n", a.getOpenCoCode(), a.getCourseName(),
+							a.getOpenCoStartDate(), a.getOpenSubCloseDate(), a.getCount_openSub(),
+							a.getCount_studentHistory(), a.getClassName());
+				}
+
+				System.out.println();
+
+				System.out.println("-----------------------------");
+				System.out.println("1.과정 상세보기  0.나가기");
+				System.out.println("-----------------------------");
+
+				int sn = sc.nextInt();
+				sc.nextLine();
+
+				if (sn == 0) {
+					break;
+				} else {
+					this.menu_611(sc);
+				}
+
+			}
+
+		}
+
+		private void menu_611(Scanner sc) {
+
+			while (true) {
+
+				List<Admin> openSubView = this.dao.openSubView();
+
+				System.out.println(
+						"-------------------------------------------------------------------------------------------------");
+				System.out.println("개설과목코드 / 과목명 / 과목시작일 / 과목종료일 /  강의실명 / 강사명 / 교재명 / ");
+				System.out.println(
+						"-------------------------------------------------------------------------------------------------");
+
+				for (Admin a : openSubView) {
+					System.out.printf("%s / %s / %s / %s / %s / %s / %s%n", a.getOpenSubCode(), a.getSubjectName(),
+							a.getOpenSubStartDate(), a.getOpenSubCloseDate(), a.getClassName(), a.getName_(),
+							a.getBookName());
+				}
+
+				System.out.println();
+
+				System.out.println("-----------------------------");
+				System.out.println("1.과목 상세보기  0.나가기");
+				System.out.println("-----------------------------");
+
+				int sn = sc.nextInt();
+				sc.nextLine();
+
+				if (sn == 0) {
+					break;
+				} else {
+					this.menu_6111(sc);
+				}
+
+			}
+		}
+
+		private void menu_6111(Scanner sc) {
+
+			while (true) {
+
+				List<Admin> testViewFromAdmin = this.dao.testViewFromAdmin();
+
+				System.out.println(
+						"-------------------------------------------------------------------------------------------------");
+				System.out.println("시험코드 / 시험날짜 / 시험문제 / 출석배점 / 필기배점 / 실기배점 / 성적등록인원 ");
+				System.out.println(
+						"-------------------------------------------------------------------------------------------------");
+
+				for (Admin a : testViewFromAdmin) {
+					System.out.printf("%s / %s / %d / %d / %d / %d%n", a.getTestCode(), a.getTestDate(),
+							a.getAttendanceScore(), a.getWriDistribution(), a.getPracDistribution(),
+							a.getCount_studentHistory());
+				}
+
+				System.out.println();
+
+				System.out.println("-----------------------------");
+				System.out.println("1.시험별 성적보기  0.나가기");
+				System.out.println("-----------------------------");
+
+				int sn = sc.nextInt();
+				sc.nextLine();
+
+				if (sn == 0) {
+					break;
+				} else {
+					this.menu_61111(sc);
+				}
+
+			}
+
+		}
+
+		private void menu_61111(Scanner sc) {
+
+			List<Admin> studentsScores = this.dao.studentsScores();
+
+			System.out.println(
+					"-------------------------------------------------------------------------------------------------");
+			System.out.println("회원번호 / 이름 / 출석점수 / 필기점수 / 실기점수 / 총점  ");
+			System.out.println(
+					"-------------------------------------------------------------------------------------------------");
+
+			for (Admin a : studentsScores) {
+				System.out.printf("%s / %s / %d / %d / %d / %d%n", a.getMid(), a.getName_(), a.getAttendanceScore(),
+						a.getWritingScore(), a.getPracticeScore(),
+						a.getAttendanceScore() + a.getWritingScore() + a.getPracticeScore());
+			}
+
+		}
+
+		private void menu_62(Scanner sc) {
+
+			System.out.print("성적을 검색할 수강생의 이름을 입력해주세요 > ");
+
+			String student_name = sc.nextLine();
+
+			List<Admin> students = this.dao.searchStudents(student_name);
+
+			System.out.println("-------------------------------------------------------");
+			System.out.println("회원번호 / 이름 / 주민번호 / 전화번호 / 회원 등록일");
+			System.out.println("-------------------------------------------------------");
+
+			for (Admin s : students) {
+				System.out.printf("%s / %s / %s / %s / %s%n", s.getMid(), s.getName_(), s.getSsn(), s.getPhone(),
+						s.getSstudentRegDate());
+			}
+
+			System.out.print("성적을 검색할 수강생의 회원번호를 입력해주세요 > ");
+
+			String student_mid = sc.nextLine();
+
+			this.menu_621(sc, student_mid);
+
+		}
+
+		private void menu_621(Scanner sc, String student_mid) {
+
+			List<Admin> studentScores = this.dao.studentScores(student_mid);
+
+			System.out.println(
+					"----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+			System.out.println(
+					"개설과정코드 / 개설과정명 / 과정시작일 / 과정종료일 / 강의실명 / 개설과목코드 / 개설과목명 / 과목시작일 / 과목종료일 / 강사명 / 출결배점 / 출결점수 / 필기배점 / 필기점수 / 실기배점 / 실기점수 / 총점 / 시험날짜 /");
+			System.out.println(
+					"----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+
+			for (Admin ss : studentScores) {
+				System.out.printf(
+						"%s / %s / %s / %s / %s / %s / %s / %s / %s / %s / %s / %s / %s / %s / %s / %s / %s / %s%n",
+						ss.getOpenCoCode(), ss.getCourseName(), ss.getOpenCoStartDate(), ss.getOpenCoCloseDate(),
+						ss.getClassName(), ss.getOpenSubCode(), ss.getSubjectName(), ss.getOpenSubStartDate(),
+						ss.getOpenSubCloseDate(), ss.getName_(), ss.getAttDistribution(), ss.getAttendanceScore(),
+						ss.getWriDistribution(), ss.getWritingScore(), ss.getPracDistribution(), ss.getPracticeScore(),
+						ss.getAttendanceScore() + ss.getWritingScore() + ss.getPracticeScore(), ss.getTestDate());
+			}
+
+		}
+
+		// 6.2 수강생 검색
+		// 6.2.1 상세보기 (과정)
+		// 6.2.1.1 상세보기(과목)
 	
 }
