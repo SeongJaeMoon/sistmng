@@ -258,10 +258,10 @@ public class AdminDAO {
 	}
 	
 	//과정 이름 물어보는 메소드
-	public List<Admin>courseNameList(String value) {
+	public Admin courseNameList(String value) {
 		
 
-		List<Admin> result = new ArrayList<Admin>();
+		Admin result = new Admin();
 		
 		//코스 코드, 코스 이름
 		String sql = "SELECT courseCode, courseName FROM course_ WHERE courseCode =?";
@@ -282,14 +282,8 @@ public class AdminDAO {
 				String courseCode = rs.getString("courseCode");
 				String courseName = rs.getString("courseName");
 				
-				Admin m = new Admin();
-				
-				m.setCourseCode(courseCode);
-				m.setCourseName(courseName);
-				
-				
-				
-				result.add(m);
+				result.setCourseCode(courseCode);
+				result.setCourseName(courseName);
 				
 			}
 			rs.close();
@@ -1630,7 +1624,7 @@ public class AdminDAO {
 
 	}
 
-	// 2.3 강사 삭제
+	//2.3 강사 삭제
 	
 	//2.2 강사 삭제 가능만 출력 리스트 
 	// [삭제 가능 강사] -> (cf.개설 과목 등록 여부로 판단, 들어 있으면 삭제 불가)
@@ -1750,7 +1744,6 @@ public class AdminDAO {
 	// 3.개설 과정 관리
 
 	// 3.1 개설 과정 출력
-
 	public List<Admin> openCourseList() {
 
 		List<Admin> result = new ArrayList<Admin>();	
@@ -1815,11 +1808,10 @@ public class AdminDAO {
 	}
 
 	// 3.1.1 개설 과정 상세보기
-
-	public List<Admin> openCourseDetailList(String value) {
+	public Admin openCourseDetailList(String value) {
 		
 		//개설 과정 코드, 과정 이름, 과정 시작일, 과정 종료일, 강의실 이름
-		List<Admin> result = new ArrayList<Admin>();
+		Admin result = new Admin();
         String sql = "SELECT oc.openCoCode, co.courseName, oc.openCoStartDate, oc.openCoCloseDate, cl.className FROM openCourse_ oc, course_ co, class_ cl WHERE oc.courseCode = co.courseCode AND oc.classCode = cl.classCode AND oc.openCoCode = ?";
         
         Connection conn = null;
@@ -1836,13 +1828,12 @@ public class AdminDAO {
         		LocalDate openCoCloseDate = rs.getDate("openCoCloseDate").toLocalDate();
         		String className = rs.getString("className");
         		
-        		Admin m = new Admin();
-        		m.setOpenCoCode(openCoCode);
-        		m.setCourseName(courseName);
-        		m.setOpenCoStartDate(openCoStartDate);
-        		m.setOpenCoCloseDate(openCoCloseDate);
-        		m.setClassName(className);
-        		result.add(m);        		
+        		result.setOpenCoCode(openCoCode);
+        		result.setCourseName(courseName);
+        		result.setOpenCoStartDate(openCoStartDate);
+        		result.setOpenCoCloseDate(openCoCloseDate);
+        		result.setClassName(className);
+        	      		
         	}
         	rs.close();	
         } catch(SQLException se) {
@@ -1864,9 +1855,7 @@ public class AdminDAO {
 		return result;
 	}
 
-
 	// 3.1.1.1 과목 상세보기
-
 	public List<Admin> subjectDetailList(String value) {
 
 	List<Admin> result = new ArrayList<Admin>();
@@ -1915,10 +1904,8 @@ public class AdminDAO {
 	return result;
 }
 
-
-//3.1.1.2 수강생 보기
-// 중도 탈락문제
-
+	//3.1.1.2 수강생 보기
+	// 중도 탈락문제
 	public void test(String value) {
 	
 	}
@@ -2078,8 +2065,19 @@ public class AdminDAO {
 
 			List<Admin> result = new ArrayList<Admin>();
 		    //개설 과정 코드, 코스 이름, 개설 과정 시작일, 개설 과정 종료일, 강의실 이름, 등록 과목 수, 등록 인원 수, 삭제가능여부
-
-	        String sql = "SELECT oc.openCoCode, c.courseName, oc.openCoStartDate, oc.openCoCloseDate, ca.className, NVL(count_, '0') count_, NVL(count_studentHistory,'0') count_studentHistory, NVL2(sh.openCoCode, '삭제 불가', '삭제 가능') checkDelOpenCourse FROM openCourse_ oc, course_ c, class_ ca, studentHistory_ sh, count_ cu, count_studentHistory csh WHERE oc.courseCode = c.courseCode AND oc.classCode = ca.classCode AND oc.openCoCode = cu.openCoCode(+) AND oc.openCoCode =  csh.openCoCode(+) AND oc.openCoCode = sh.openCoCode(+) GROUP BY  oc.openCoCode, c.courseName, oc.openCoStartDate, oc.openCoCloseDate, ca.className, sh.openCoCode, count_, count_studentHistory ORDER BY  oc.openCoCode";
+			/*
+			 CREATE OR REPLACE VIEW delteOpenCourse
+			 AS
+			 SELECT oc.openCoCode, c.courseName, oc.openCoStartDate, oc.openCoCloseDate, 
+        		ca.className, NVL(count_, '0') count_, NVL(count_studentHistory,'0') count_studentHistory
+        		FROM openCourse_ oc, course_ c, class_ ca, studentHistory_ sh, count_ cu, count_studentHistory csh 
+        		WHERE oc.courseCode = c.courseCode AND oc.classCode = ca.classCode 
+        		AND oc.openCoCode = cu.openCoCode(+) AND oc.openCoCode =  csh.openCoCode(+) AND oc.openCoCode = sh.openCoCode(+) 
+        		AND sh.openCoCode IS NULL
+        		GROUP BY  oc.openCoCode, c.courseName, oc.openCoStartDate, oc.openCoCloseDate, ca.className, count_, count_studentHistory 
+        		ORDER BY  oc.openCoCode; 
+			 */
+	        String sql = "SELECT openCoCode, courseName, openCoStartDate, openCoCloseDate, className, count_, count_studentHistory FROM delteOpenCourse";
 	        
 	        Connection conn = null;
 	        PreparedStatement pstmt = null;
@@ -2096,8 +2094,7 @@ public class AdminDAO {
 	        		LocalDate openCoCloseDate = rs.getDate("openCoCloseDate").toLocalDate();
 	        		int count_ = rs.getInt("count_");
 	        		int count_studentHistory = rs.getInt("count_studentHistory");
-	        		String checkDelOpenCourse = rs.getString("checkDelOpenCourse");
-	   	
+	       
 	        		Admin m = new Admin();
 	        		m.setOpenCoCode(openCoCode);
 	        		m.setCourseName(courseName);
@@ -2106,7 +2103,6 @@ public class AdminDAO {
 	        		m.setOpenCoCloseDate(openCoCloseDate);
 	        		m.setCount_(count_);
 	        		m.setCount_studentHistory(count_studentHistory);
-	        		m.setCheckDelOpenCourse(checkDelOpenCourse);
 	        		
 	        		result.add(m);        		
 	        	}
@@ -2225,7 +2221,6 @@ public class AdminDAO {
 	}
 
 	// 4.1 과정 상세보기
-	
 	public List<Admin> openSubjectDetailList(String value) {
 		
 		List<Admin>result = new ArrayList<Admin>();
@@ -2462,7 +2457,50 @@ public class AdminDAO {
 
 	// -----------------------------------------------
 	// 5.수강생 관리
-		public List<Admin>studentAddSearch(String value1,String value2,String value3) {
+	
+	//수강생 이름으로 mid 가져오기 
+	public Admin studentDetailByNameSSN(String name_, String ssn) {
+				Admin result = new Admin();
+				String sql = "SELECT mid FROM member_ WHERE name_ = ? AND ssn = ?";
+
+				Connection conn = null;
+				PreparedStatement pstmt = null;
+				try {
+					conn = SQLConnection.connect();
+					
+					pstmt = conn.prepareStatement(sql);
+					pstmt.setString(1, name_);
+					pstmt.setString(2, ssn);
+			
+					ResultSet rs = pstmt.executeQuery();
+					
+					while (rs.next()) {
+						String mid = rs.getString("mid");
+						result.setMid(mid);
+					}
+					rs.close();
+					
+				} catch (SQLException se) {
+					System.out.print(se.getMessage());
+				} catch (Exception e) {
+					System.out.print(e.getMessage());
+				} finally {
+					try {
+						if (pstmt != null)
+							pstmt.close();
+					} catch (SQLException se) {
+					}
+					try {
+						SQLConnection.close();
+					} catch (SQLException se) {
+						System.out.print(se.getMessage());
+					}
+				}
+				
+				return result;
+			}
+	//수강생 등록용 찾기
+	public List<Admin>studentAddSearch(String value1,String value2,String value3) {
 			
 			List<Admin> result = new ArrayList<Admin>();
 
@@ -2528,7 +2566,7 @@ public class AdminDAO {
 		}
 
 		// 등록 가능한 개설 과정 리스트
-		List<Admin> openCourseAddList() {
+		public List<Admin> openCourseAddList() {
 
 			List<Admin> result = new ArrayList<Admin>();
 
@@ -2592,7 +2630,6 @@ public class AdminDAO {
 		}
 
 		// 5.1 수강생 등록
-
 		public int studentAdd(String name_,String ssn,String phone) {
 
 			int result = 0;
@@ -2638,11 +2675,10 @@ public class AdminDAO {
 		}
 		
 		//수강생 개설과정 등록
-		public int studentOpenCourseAdd(String value) {
-			
+		public int studentOpenCourseAdd(String mid, String openCoCode) {
 			int result = 0;
 			
-			String sql = "";
+			String sql = "INSERT INTO studentHistory_ (mid, OPENCOCODE) VALUES (?, ?)";
 			
 			
 			Connection conn = null;
@@ -2652,8 +2688,9 @@ public class AdminDAO {
 
 				pstmt = conn.prepareStatement(sql);
 
-				pstmt.setString(1,value);
-
+				pstmt.setString(1,mid);
+				pstmt.setString(2, openCoCode);
+				
 				result = pstmt.executeUpdate();
 
 			} catch (SQLException se) {
@@ -2682,19 +2719,27 @@ public class AdminDAO {
 		}
 
 		// 5.2 수강생 상세보기(중도탈락 관리)
-
 		//mid
-		List<Admin> studentCourseCountList(String key,String value) {
-
+		
+		public List<Admin> studentCourseCountList(String key,String value) {
 
 			List<Admin> result = new ArrayList<Admin>();
 
-			String sql = null;
+			/*
+		CREATE OR REPLACE VIEW studentCourseCount
+		AS
+		SELECT mem.mid , mem.name_ , mem.ssn , mem.phone , mem.memberRegDate , COUNT(sh.mid)
+		FROM member_ mem , student_ stu , studentHistory_ sh
+		WHERE mem.mid = stu.mid
+		AND stu.mid = sh.mid
+		GROUP BY mem.mid , mem.name_ , mem.ssn , mem.phone , mem.memberRegDate;
+			 */
+			String sql = "SELECT mid, name_, ssn, phone, memberRegDate FROM studentCourseCount";
 			
 			switch(key) {
-			case "이름" : sql+= "";
-			case "전화번호" : sql+= "";
-			case "mid" : sql+= "";
+			case "이름" : sql+= " WHERE name_ = ?";break;
+			case "전화번호" : sql += " WHERE phone = ?";break;
+			case "mid" : sql+= " WHERE mid = ?";break;
 			}
 			
 			Connection conn = null;
@@ -2705,7 +2750,7 @@ public class AdminDAO {
 				conn = SQLConnection.connect();
 
 				pstmt = conn.prepareStatement(sql);
-
+					
 				pstmt.setString(1, value);
 				
 
@@ -2756,34 +2801,34 @@ public class AdminDAO {
 			return result;
 
 		}
-		
-		
+
 		//mid
 		//수강생 수강상태 상세보기
-		List<Admin> studentDetailCourseCountList(String value) {
-
-
+		public List<Admin> studentDetailCourseCountList(String value) {
 			List<Admin> result = new ArrayList<Admin>();
-
-			
+			/*
+			 CREATE OR REPLACE VIEW detailView AS
+			SELECT stu.mid, openC.openCoCode , cou.courseName , openC.openCoStartDate , openC.openCoCloseDate , cla.classCode , dro.failureDate
+			FROM openCourse_ openC , course_ cou , class_ cla , studentHistory_ sh , student_ stu , dropout_ dro
+			WHERE stu.mid = sh.mid
+			AND sh.mid = dro.mid(+)
+			AND openC.openCoCode = sh.openCoCode
+			AND openC.courseCode = cou.courseCode
+			AND cla.classCode = openC.classCode
+			GROUP BY stu.mid,openC.openCoCode , cou.courseName , openC.openCoStartDate , openC.openCoCloseDate , cla.classCode , dro.failureDate;
+			 */
 			//WHERE mid = ?
-			String sql = null;
-			
-			
-			
+			String sql = "SELECT mid, openCoCode, courseName, openCoStartDate, openCoCloseDate, classCode, failureDate FROM detailView WHERE mid = ?";
+
 			Connection conn = null;
 			PreparedStatement pstmt = null;
-
-			
 			try {
 				conn = SQLConnection.connect();
 
 				pstmt = conn.prepareStatement(sql);
-
 				//mid
 				pstmt.setString(1, value);
-				
-
+			
 				ResultSet rs = pstmt.executeQuery();
 
 				while (rs.next()) {
@@ -2833,14 +2878,16 @@ public class AdminDAO {
 			return result;
 
 		}
-		
-		
-
-		public int dropOut(String openCoCode,String date) {
+		//수강생 중도탈락
+		public int dropOut(String mid, String openCoCode,String date) {
 			
 			int result = 0;
+			/*
+			INSERT INTO dropOut_ (failureCode , mid , openCoCode, failureDate)
+			VALUES(((SELECT NVL(LPAD(SUBSTR(MAX(failureCode),4,3)+1, 6, 'FAT000'), 'FAT001') FROM dropOut_),'','','');
+			 */
 			
-			String sql = "";
+			String sql = "INSERT INTO dropOut_ (failureCode , mid , openCoCode, failureDate) VALUES(((SELECT NVL(LPAD(SUBSTR(MAX(failureCode),4,3)+1, 6, 'FAT000'), 'FAT001') FROM dropOut_),? ,? ,?)";
 			
 			
 			Connection conn = null;
@@ -2879,25 +2926,28 @@ public class AdminDAO {
 		}
 		
 		// 5.3 개설과정 미등록 수강생 리스트
-		
-		List<Admin> studentNoAddCourseList(String key,String value){
+		// key 입력 받는 부분 수정 필요할 수 있음
+		public List<Admin> studentNoAddCourseList(String key,String value){
 			
 			List<Admin>result = new ArrayList<Admin>();
-			
+			/*
+			SELECT stu.mid , mem.name_ , mem.ssn , mem.phone , mem.memberRegDate , sh.openCoCode
+        		FROM member_ mem , student_ stu , studentHistory_ sh , openCourse_ openC
+        		WHERE mem.mid = stu.mid
+        		AND stu.mid = sh.mid(+)
+        		AND openC.openCoCode = sh.openCoCode
+        		AND sh.openCoCode IS NULL;
+			 */
+			//회원고유번호 / 이름 / 주민번호 / 전화번호 / 회원등록일 / 개설과정코드
 			//수강 횟수가 0일때
-			String sql = null;
-			
-			
+			String sql = "SELECT stu.mid , mem.name_ , mem.ssn , mem.phone , mem.memberRegDate , sh.openCoCode FROM member_ mem , student_ stu , studentHistory_ sh , openCourse_ openC WHERE mem.mid = stu.mid AND stu.mid = sh.mid(+) AND openC.openCoCode = sh.openCoCode AND sh.openCoCode IS NULL";
 					switch(key) {
-					
 					case "이름" :
-						sql += "WHERE name_ = ?";
+						sql += " AND name_ = ?";
 						break;
-						
 					case "전화번호" :
-						sql += "WHERE phone = ?";
+						sql += " AND phone = ?";
 						break;
-					
 					}
 					
 					Connection conn = null;
@@ -2965,14 +3015,22 @@ public class AdminDAO {
 		}
 
 		// 5.3 등록 가능한 개설 과정
-
-		List<Admin> studentCourseAddList(String value) {
+		//개설 과정 등록 가능 리스트
+		//[등록 가능한 개설 과정]
+		public List<Admin> studentCourseAddList() {
 			
 			List<Admin>result = new ArrayList<Admin>();
-			
-			String sql = null;
-			
-					
+			/*
+			   
+        		SELECT openC.openCoCode , cou.courseName , cou.courseCode , cla.classCode , openC.openCoStartDate , openC.openCoCloseDate
+        		FROM openCourse_ openC , course_ cou, class_ cla
+        		WHERE openC.courseCode = cou.courseCode
+        		AND cla.classCode = openC.classCode
+        		AND TO_CHAR(sysdate, 'YYYY-MM-DD') <= openC.openCoStartDate;
+			 */
+			//개설과정코드 / 과정명 / 과정코드 / 강의실고유번호 / 과정시작일 / 과정종료일
+			String sql = "SELECT openC.openCoCode , cou.courseName , cou.courseCode , cla.classCode , openC.openCoStartDate , openC.openCoCloseDate FROM openCourse_ openC , course_ cou, class_ cla WHERE openC.courseCode = cou.courseCode AND cla.classCode = openC.classCode AND TO_CHAR(sysdate, 'YYYY-MM-DD') <= openC.openCoStartDate";
+
 					Connection conn = null;
 					PreparedStatement pstmt = null;
 					
@@ -2980,9 +3038,6 @@ public class AdminDAO {
 						conn = SQLConnection.connect();
 
 						pstmt = conn.prepareStatement(sql);
-
-						//mid
-						pstmt.setString(1, value);
 
 						ResultSet rs = pstmt.executeQuery();
 
@@ -2994,8 +3049,6 @@ public class AdminDAO {
 							String classCode = rs.getString("classCode");
 							LocalDate openCoStartDate = rs.getDate("openCoStartDate").toLocalDate();
 							LocalDate openCoCloseDate = rs.getDate("openCoCloseDate").toLocalDate();
-							
-
 							
 							Admin m = new Admin();
 							
@@ -3028,19 +3081,15 @@ public class AdminDAO {
 							System.out.print(se.getMessage());
 						}
 					}
-			
-			
 			return result;
-			
-			
-
 		}
 		
-		public int studentCourseAdd(String value) {
+		//개설 과정 등록
+		public int studentCourseAdd(String mid, String openCoCode) {
 			
 			int result = 0;
 			
-			String sql = "";
+			String sql = "INSERT INTO studentHistory_ (mid ,OPENCOCODE) VALUES(?,?)";
 			
 			
 			Connection conn = null;
@@ -3050,7 +3099,9 @@ public class AdminDAO {
 
 				pstmt = conn.prepareStatement(sql);
 
-				pstmt.setString(1,value);
+				pstmt.setString(1,mid);
+				pstmt.setString(2, openCoCode);
+				
 				result = pstmt.executeUpdate();
 
 			} catch (SQLException se) {
@@ -3076,78 +3127,20 @@ public class AdminDAO {
 			
 		}
 		
-		List<Admin> studentCourseAddAskList(String value1,String value2){
-			
-			List<Admin>result = new ArrayList<Admin>();
-			
-			String sql = "";
-			
-			Connection conn = null;
-			PreparedStatement pstmt = null;
-			
-			try {
-				conn = SQLConnection.connect();
-				
-				pstmt = conn.prepareStatement(sql);
-				
-				pstmt.setString(1, value1);
-				pstmt.setString(2, value2);
-				
+		/*
+		 SELECT stu.mid , mem.name_
+		 FROM member_ mem , student_ stu
+		 WHERE mem.mid = stu.mid;
 
-
-				ResultSet rs = pstmt.executeQuery();
-
-				while (rs.next()) {
-					
-					String mid = rs.getString("mid");
-					String name_ = rs.getString("name_");
-					String openCoCode = rs.getString("openCoCode");
-					String courseName = rs.getString("courseName");
-					LocalDate openCoStartDate = rs.getDate("openCoStartDate").toLocalDate();
-					LocalDate openCoCloseDate = rs.getDate("openCoCloseDate").toLocalDate();
-					
-
-					
-					Admin m = new Admin();
-					
-					m.setMid(mid);
-					m.setName_(name_);
-					m.setOpenCoCode(openCoCode);
-					m.setCourseName(courseName);
-					m.setOpenCoStartDate(openCoStartDate);
-					m.setOpenCoCloseDate(openCoCloseDate);
-					
-					
-					result.add(m);
-
-				}
-				rs.close();
-
-			} catch (SQLException se) {
-				System.out.print(se.getMessage());
-			} catch (Exception e) {
-				System.out.print(e.getMessage());
-			} finally {
-				try {
-					if (pstmt != null)
-						pstmt.close();
-				} catch (SQLException se) {
-				}
-				try {
-					SQLConnection.close();
-				} catch (SQLException se) {
-					System.out.print(se.getMessage());
-				}
-			}
-			
-			return result;
-		}
+		SELECT openC.openCoCode , cou.courseName , openC.openCoStartDate , openC.openCoCloseDate
+		FROM openCourse_ openC , course_ cou
+		WHERE cou.courseCode = openC.courseCode;
+		 */
 		
 		
+		//------------------------------ 
+		//5.4 수강생 삭제
 
-		// 5.4 수강생 삭제
-
-		
 		// 5.4 수강생 과정삭제 목록
 		List<Admin> studentDeleteCourseList(String key,String value){
 			
@@ -3235,14 +3228,12 @@ public class AdminDAO {
 		
 
 		// 5.4.1 수강생 과정 삭제
-
 		public int studentCourseDelete(String value) {
 
 			int result = 0;
-			
+		
 			String sql = "";
-			
-			
+
 			Connection conn = null;
 			PreparedStatement pstmt = null;
 			try {
@@ -3276,10 +3267,7 @@ public class AdminDAO {
 
 		}
 		
-		
-
 		// 5.4.2 수강생 삭제
-
 		public int studentDelete(String value) {
 			
 
