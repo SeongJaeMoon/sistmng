@@ -3142,24 +3142,21 @@ public class AdminDAO {
 		//5.4 수강생 삭제
 
 		// 5.4 수강생 과정삭제 목록
-		List<Admin> studentDeleteCourseList(String key,String value){
+		public List<Admin> studentDeleteCourseList(String key,String value){
 			
 			List<Admin>result = new ArrayList<Admin>();
-			
-			//수강 횟수가 0일때
-			String sql = null;
-			
-			
+			/*
+			 SELECT s.mid , m.name_, m.ssn, m.phone, m.memberregdate, sh.openCoCode
+			FROM student_ s, member_ m, studentHistory_ sh
+			WHERE m.mid = s.mid
+			AND s.mid = sh.mid
+			AND m.name_ = '?';
+			 */
+			String sql = "SELECT s.mid , m.name_, m.ssn, m.phone, m.memberregdate, sh.openCoCode FROM student_ s, member_ m, studentHistory_ sh WHERE m.mid = s.mid AND s.mid = sh.mid";
+
 					switch(key) {
-					
-					case "이름" :
-						sql += "WHERE name_ = ?";
-						break;
-						
-					case "전화번호" :
-						sql += "WHERE phone = ?";
-						break;
-					
+					case "이름" :sql += " m.name_ = ?";break;				
+					case "전화번호" :sql += " m.phone = ?";break;	
 					}
 					
 					Connection conn = null;
@@ -3171,7 +3168,7 @@ public class AdminDAO {
 
 						pstmt = conn.prepareStatement(sql);
 
-						//mid,phone
+						//mid or phone
 						pstmt.setString(1, value);
 						
 
@@ -3231,8 +3228,13 @@ public class AdminDAO {
 		public int studentCourseDelete(String value) {
 
 			int result = 0;
-		
-			String sql = "";
+		/*
+		 SELECT sh.openCoCode 
+        FROM studentHistory_ sh, openCourse_ oc 
+        WHERE sh.openCoCode = oc.openCoCode 
+        AND oc.openCoStartDate >= TO_CHAR(SYSDATE, 'YYYY-MM-DD');
+		 */
+			String sql = "DELETE FROM studentHistory WHERE mid = ? AND openCoCode = ( SELECT sh.openCoCode FROM studentHistory_ sh, openCourse_ oc WHERE sh.openCoCode = oc.openCoCode AND oc.openCoStartDate >= TO_CHAR(SYSDATE, 'YYYY-MM-DD'))";
 
 			Connection conn = null;
 			PreparedStatement pstmt = null;
@@ -3241,8 +3243,9 @@ public class AdminDAO {
 
 				pstmt = conn.prepareStatement(sql);
 
-				//mid
+				//mid, openCoCode
 				pstmt.setString(1,value);
+				
 				result = pstmt.executeUpdate();
 
 			} catch (SQLException se) {
@@ -3269,11 +3272,10 @@ public class AdminDAO {
 		
 		// 5.4.2 수강생 삭제
 		public int studentDelete(String value) {
-			
 
 			int result = 0;
 			
-			String sql = "";
+			String sql = "DELETE FROM student_ WHERE mid = ?";
 			
 			
 			Connection conn = null;
@@ -3310,20 +3312,37 @@ public class AdminDAO {
 		}
 		
 		//삭제 가능 수강생 목록
-		List<Admin> studentList(String key,String value){
+		List<Admin> studentList(String key, String value){
 			
 			List<Admin> result = new ArrayList<Admin>();
-
-			String sql = null;
 			
-			switch(key) {
-			case "이름" : sql+= "";
-			case "전화번호" : sql+= "";
-			}
+			/*
+		CREATE OR REPLACE VIEW studentSearchView  
+        AS
+        SELECT s.mid , m.name_, m.ssn, m.phone, m.memberregdate, COUNT(sh.mid) count_
+        FROM student_ s, member_ m, studentHistory_ sh
+        WHERE s.mid = m.mid
+        AND s.mid = sh.mid(+)
+        AND s.mid NOT IN (SELECT  sh.mid
+        FROM openCourse_ oc, studentHistory_ sh
+        WHERE TO_CHAR(sysdate, 'YYYY-MM-DD')  >= oc.openCoStartDate
+        AND TO_CHAR(sysdate, 'YYYY-MM-DD') <= oc.openCoCloseDate
+        AND oc.openCoCode = sh.openCoCode)
+        GROUP BY  s.mid,sh.mid , m.name_, m.ssn, m.phone, m.memberregdate
+        ORDER BY sh.mid;
+			 */
+			//회원고유번호, 이름, 주민등록번호, 전화번호, 회원등록일, 수강횟수
+			String sql = "SELECT mid,name_,ssn,phone,memberregdate,count_ FROM studentSearchView";
+			
+		
 			
 			Connection conn = null;
 			PreparedStatement pstmt = null;
 
+			switch(key) {
+			case "이름" :sql += " WHERE name_ = ?";break;				
+			case "전화번호" :sql += " WHERE phone = ?";break;	
+			}
 			
 			try {
 				conn = SQLConnection.connect();
@@ -3384,387 +3403,419 @@ public class AdminDAO {
 
 		// -----------------------------------------------
 
-		// 6. 성적 조회
+	
+	public List<Admin> openCoView() {
+		List<Admin> openCoView = new ArrayList<>();
 
-		public String scoreSearch() {
+		// 개설과정코드 / 과정명 / 과정시작일 / 과정종료일 / 과목 등록 갯수 / 수강생 등록 인원 / 강의실명
 
-			String result = null;
+		// CREATE OR REPLACE VIEW openCourseView
+		// AS
+		// SELECT oc.openCoCode, c.courseName, oc.openCoStartDate, oc.openCoCloseDate,
+		// NVL(ct.count_, 0 ) count_,
+		// NVL(ch.count_studentHistory,0)count_studentHistory, cl.className
+		// FROM course_ c, openCourse_ oc, count_ ct, count_studentHistory ch, class_ cl
+		// WHERE c.courseCode = oc.courseCode
+		// AND oc.openCoCode = ct.openCoCode(+)
+		// AND oc.openCoCode = ch.openCoCode(+)
+		// AND oc.classCode = cl.classCode;
+		String sql = "SELECT openCoCode, courseName, openCoStartDate, openCoCloseDate, NVL(count_, 0 ) count_, NVL(count_studentHistory,0) count_studentHistory, className FROM openCourseView";
 
-			return result;
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		try {
+			conn = SQLConnection.connect();
+			pstmt = conn.prepareStatement(sql);
 
-		}
+			ResultSet rs = pstmt.executeQuery();
 
-		// 6.1 개설 과정 보기
+			while (rs.next()) {
 
-		public String scoreOpenCourseList() {
+				Admin a = new Admin();
 
-			// searchScoreOpenCourseDetailList() 호출
+				a.setOpenCoCode(rs.getString("openCoCode"));
+				a.setCourseName(rs.getString("courseName"));
+				a.setOpenCoStartDate(rs.getDate("openCoStartDate").toLocalDate());
+				a.setOpenCoCloseDate(rs.getDate("openCoCloseDate").toLocalDate());
+				a.setCount_openSub(rs.getInt("count_"));
+				a.setCount_studentHistory(rs.getInt("count_studentHistory"));
+				a.setClassName(rs.getString("className"));
 
-			String result = null;
+				openCoView.add(a);
 
-			return result;
+			}
+			rs.close();
 
-		}
-
-		// 6.1.1 상세보기
-
-		public String scoreOpenCourseDetailList() {
-
-			String result = null;
-
-			return result;
-
-		}
-
-		// 6.1.1.1 과목별 성적 보기
-
-		public String scoreOpenSubjectList() {
-
-			String result = null;
-
-			return result;
-
-		}
-
-		// 6.2 수강생 검색
-
-		public String searchStudent() {
-
-			String result = null;
-
-			return result;
-
-		}
-
-		// 6.2.1 상세보기 (과정)
-
-		public String studentOpenCourseDetail() {
-
-			String result = null;
-
-			return result;
-
-		}
-
-		// 6.2.1.1 상세보기 (과목)
-
-		public String studentOpenSubjectDetail() {
-
-			String result = null;
-
-			return result;
-
-		}
-
-		// 6.3 성적 정보
-
-		public String scoreInfo() {
-
-			String result = null;
-
-			return result;
-
-		}
-
-		// 6.3.1 성적 전체 출력
-
-		public String viewAllScoreList() {
-
-			String result = null;
-
-			return result;
-
-		}
-
-		// 6.3.2 이름 검색
-
-		public String searchNameScoreList() {
-
-			String result = null;
-
-			return result;
-
-		}
-
-		// 6.3.3 시험 코드 검색
-
-		public String searchTestCodeScoreList() {
-
-			String result = null;
-
-			return result;
-
-		}
-
-
-		public List<Admin> openCoView() {
-			List<Admin> openCoView = new ArrayList<>();
-
-			// 강사명 / 주민번호 / 전화번호 / 강의 가능 목록
-
-			String sql = "";
-
-			Connection conn = null;
-			PreparedStatement pstmt = null;
+		} catch (SQLException se) {
+			se.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
 			try {
-				conn = SQLConnection.connect();
-				pstmt = conn.prepareStatement(sql);
-
-				// pstmt.setString(1, mid);
-
-				ResultSet rs = pstmt.executeQuery();
-
-				while (rs.next()) {
-
-					Admin a = new Admin();
-
-					openCoView.add(a);
-
-				}
-				rs.close();
-
+				if (pstmt != null)
+					pstmt.close();
+			} catch (SQLException se) {
+			}
+			try {
+				SQLConnection.close();
 			} catch (SQLException se) {
 				se.printStackTrace();
-			} catch (Exception e) {
-				e.printStackTrace();
-			} finally {
-				try {
-					if (pstmt != null)
-						pstmt.close();
-				} catch (SQLException se) {
-				}
-				try {
-					SQLConnection.close();
-				} catch (SQLException se) {
-					se.printStackTrace();
-				}
 			}
-
-			return openCoView;
 		}
 
-		public List<Admin> openSubView() {
-			List<Admin> openCoView = new ArrayList<>();
+		return openCoView;
+	}
 
-			String sql = "";
+	public List<Admin> openSubView(String openCoCode) {
+		List<Admin> openCoView = new ArrayList<>();
 
-			Connection conn = null;
-			PreparedStatement pstmt = null;
+		// CREATE OR REPLACE VIEW openCourseDetailView
+		// AS
+		// SELECT os.openSubCode,os.openCoCode, s.subjectName, os.openSubStartDate,
+		// os.openSubCloseDate, m.name_, b.bookName
+		// FROM openSubject_ os, subject_ s, member_ m, books_ b
+		// WHERE os.subjectCode = s.subjectCode
+		// AND os.bookCode = b.bookCode
+		// AND os.mid = m.mid
+		// ORDER BY os.openSubCode;
+
+		// 개설과목코드 / 과목명 / 과목시작일 / 과목종료일 / 강사명 / 교재명 /
+
+		String sql = "SELECT openSubCode, subjectName, openSubStartDate, openSubCloseDate,  name_, bookName	FROM openCourseDetailView WHERE openCoCode = ?";
+
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		try {
+			conn = SQLConnection.connect();
+			pstmt = conn.prepareStatement(sql);
+
+			pstmt.setString(1, openCoCode);
+
+			ResultSet rs = pstmt.executeQuery();
+
+			while (rs.next()) {
+
+				Admin a = new Admin();
+
+				a.setOpenSubCode(rs.getString("openSubCode"));
+				a.setSubjectName(rs.getString("subjectName"));
+				a.setOpenSubStartDate(rs.getDate("openSubStartDate").toLocalDate());
+				a.setOpenSubCloseDate(rs.getDate("openSubCloseDate").toLocalDate());
+				a.setName_(rs.getString("name_"));
+				a.setBookName(rs.getString("bookName"));
+
+				openCoView.add(a);
+
+			}
+			rs.close();
+
+		} catch (SQLException se) {
+			se.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
 			try {
-				conn = SQLConnection.connect();
-				pstmt = conn.prepareStatement(sql);
-
-				// pstmt.setString(1, mid);
-
-				ResultSet rs = pstmt.executeQuery();
-
-				while (rs.next()) {
-
-					Admin a = new Admin();
-
-					openCoView.add(a);
-
-				}
-				rs.close();
-
+				if (pstmt != null)
+					pstmt.close();
+			} catch (SQLException se) {
+			}
+			try {
+				SQLConnection.close();
 			} catch (SQLException se) {
 				se.printStackTrace();
-			} catch (Exception e) {
-				e.printStackTrace();
-			} finally {
-				try {
-					if (pstmt != null)
-						pstmt.close();
-				} catch (SQLException se) {
-				}
-				try {
-					SQLConnection.close();
-				} catch (SQLException se) {
-					se.printStackTrace();
-				}
 			}
-
-			return openCoView;
 		}
 
-		public List<Admin> testViewFromAdmin() {
-			List<Admin> openCoView = new ArrayList<>();
+		return openCoView;
+	}
 
-			String sql = "";
+	public List<Admin> testViewFromAdmin(String openSubCode) {
 
-			Connection conn = null;
-			PreparedStatement pstmt = null;
+		// CREATE OR REPLACE VIEW count_score
+		// AS
+		// SELECT COUNT(testCode) count_score, testCode
+		// FROM score_
+		// GROUP BY testCode
+		// ORDER BY testCode;
+		//
+		//
+		// CREATE OR REPLACE VIEW openSubjectDetailView
+		// AS
+		// SELECT t.testCode, t.testDate, t.testFile, NVL(d.attDistribution,0 )
+		// attDistribution, NVL(d.wriDistribution,0) wriDistribution,
+		// NVL(d.pracDistribution,0) pracDistribution, t.openSubCode,
+		// NVL(cs.count_score,0) count_score
+		// FROM test_ t, distribution_ d, count_score cs
+		// WHERE t.testCode = d.testCode(+)
+		// AND cs.testCode(+) = t.testCode
+		// ORDER BY t.testCode;
+
+		// 시험코드 / 시험날짜 / 시험문제 / 출석배점 / 필기배점 / 실기배점 / 성적등록인원
+
+		List<Admin> openCoView = new ArrayList<>();
+
+		String sql = "SELECT testCode, testDate, testFile, NVL(attDistribution,0 ) attDistribution,NVL(wriDistribution,0) wriDistribution, NVL(pracDistribution,0) pracDistribution,NVL(count_score,0) count_score FROM openSubjectDetailView WHERE openSubCode = ?";
+
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		try {
+			conn = SQLConnection.connect();
+			pstmt = conn.prepareStatement(sql);
+
+			pstmt.setString(1, openSubCode);
+
+			ResultSet rs = pstmt.executeQuery();
+
+			while (rs.next()) {
+
+				Admin a = new Admin();
+
+				a.setTestCode(rs.getString("testCode"));
+				a.setTestDate(rs.getDate("testDate").toLocalDate());
+				a.setTestFile(rs.getString("testDate"));
+				a.setAttDistribution(rs.getInt("attDistribution"));
+				a.setWriDistribution(rs.getInt("wriDistribution"));
+				a.setPracDistribution(rs.getInt("pracDistribution"));
+				a.setCount_studentHistory(rs.getInt("count_score"));
+
+				openCoView.add(a);
+
+			}
+			rs.close();
+
+		} catch (SQLException se) {
+			se.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
 			try {
-				conn = SQLConnection.connect();
-				pstmt = conn.prepareStatement(sql);
-
-				// pstmt.setString(1, mid);
-
-				ResultSet rs = pstmt.executeQuery();
-
-				while (rs.next()) {
-
-					Admin a = new Admin();
-
-					openCoView.add(a);
-
-				}
-				rs.close();
-
+				if (pstmt != null)
+					pstmt.close();
+			} catch (SQLException se) {
+			}
+			try {
+				SQLConnection.close();
 			} catch (SQLException se) {
 				se.printStackTrace();
-			} catch (Exception e) {
-				e.printStackTrace();
-			} finally {
-				try {
-					if (pstmt != null)
-						pstmt.close();
-				} catch (SQLException se) {
-				}
-				try {
-					SQLConnection.close();
-				} catch (SQLException se) {
-					se.printStackTrace();
-				}
 			}
-
-			return openCoView;
 		}
 
-		public List<Admin> studentsScores() {
-			List<Admin> studentsScores = new ArrayList<>();
+		return openCoView;
+	}
 
-			// 강사명 / 주민번호 / 전화번호 / 강의 가능 목록
+	public List<Admin> studentsScores(String testCode) {
+		List<Admin> studentsScores = new ArrayList<>();
 
-			String sql = "";
+		// 회원번호 / 이름 / 출석점수 / 필기점수 / 실기점수 / 총점
 
-			Connection conn = null;
-			PreparedStatement pstmt = null;
+		String sql = "SELECT mid, name_, attendanceScore, writingScore, practiceScore, sum FROM scoreDetailByStuView WHERE testCode = ?";
+
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		try {
+			conn = SQLConnection.connect();
+			pstmt = conn.prepareStatement(sql);
+
+			pstmt.setString(1, testCode);
+
+			ResultSet rs = pstmt.executeQuery();
+
+			while (rs.next()) {
+
+				Admin a = new Admin();
+
+				a.setMid(rs.getString("mid"));
+				a.setName_(rs.getString("name_"));
+				a.setAttendanceScore(rs.getInt("attendanceScore"));
+				a.setPracticeScore(rs.getInt("practiceScore"));
+				a.setWritingScore(rs.getInt("writingScore"));
+
+				studentsScores.add(a);
+
+			}
+			rs.close();
+
+		} catch (SQLException se) {
+			se.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
 			try {
-				conn = SQLConnection.connect();
-				pstmt = conn.prepareStatement(sql);
-
-				// pstmt.setString(1, mid);
-
-				ResultSet rs = pstmt.executeQuery();
-
-				while (rs.next()) {
-
-					Admin a = new Admin();
-
-					studentsScores.add(a);
-
-				}
-				rs.close();
-
+				if (pstmt != null)
+					pstmt.close();
+			} catch (SQLException se) {
+			}
+			try {
+				SQLConnection.close();
 			} catch (SQLException se) {
 				se.printStackTrace();
-			} catch (Exception e) {
-				e.printStackTrace();
-			} finally {
-				try {
-					if (pstmt != null)
-						pstmt.close();
-				} catch (SQLException se) {
-				}
-				try {
-					SQLConnection.close();
-				} catch (SQLException se) {
-					se.printStackTrace();
-				}
 			}
-
-			return studentsScores;
 		}
 
-		public List<Admin> searchStudents(String student_name) {
-			List<Admin> searchStudents = new ArrayList<>();
+		return studentsScores;
+	}
 
-			// 강사명 / 주민번호 / 전화번호 / 강의 가능 목록
+	public List<Admin> searchStudents(String studentName) {
+		List<Admin> searchStudents = new ArrayList<>();
 
-			String sql = "";
+		// CREATE OR REPLACE VIEW studentsList
+		// AS
+		// SELECT m.mid, m.name_, m.ssn, m.phone, m.memberRegDate
+		// FROM member_ m, student_ s
+		// WHERE m.mid = s.mid;
 
-			Connection conn = null;
-			PreparedStatement pstmt = null;
+		// 회원번호 / 이름 / 주민번호 / 전화번호 / 회원 등록일
+
+		String sql = "SELECT mid, name_, ssn, phone, memberRegDate FROM studentsList WHERE name_ = ?";
+
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		try {
+			conn = SQLConnection.connect();
+			pstmt = conn.prepareStatement(sql);
+
+			pstmt.setString(1, studentName);
+
+			ResultSet rs = pstmt.executeQuery();
+
+			while (rs.next()) {
+
+				Admin a = new Admin();
+
+				a.setMid(rs.getString("mid"));
+				a.setName_(rs.getString("name_"));
+				a.setSsn(rs.getString("ssn"));
+				a.setPhone(rs.getString("phone"));
+				a.setSstudentRegDate(rs.getDate("memberRegDate").toLocalDate());
+
+				searchStudents.add(a);
+
+			}
+			rs.close();
+
+		} catch (SQLException se) {
+			se.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
 			try {
-				conn = SQLConnection.connect();
-				pstmt = conn.prepareStatement(sql);
-
-				// pstmt.setString(1, mid);
-
-				ResultSet rs = pstmt.executeQuery();
-
-				while (rs.next()) {
-
-					Admin a = new Admin();
-
-					searchStudents.add(a);
-
-				}
-				rs.close();
-
+				if (pstmt != null)
+					pstmt.close();
+			} catch (SQLException se) {
+			}
+			try {
+				SQLConnection.close();
 			} catch (SQLException se) {
 				se.printStackTrace();
-			} catch (Exception e) {
-				e.printStackTrace();
-			} finally {
-				try {
-					if (pstmt != null)
-						pstmt.close();
-				} catch (SQLException se) {
-				}
-				try {
-					SQLConnection.close();
-				} catch (SQLException se) {
-					se.printStackTrace();
-				}
 			}
-
-			return searchStudents;
 		}
 
-		public List<Admin> studentScores(String student_mid) {
-			List<Admin> studentScores = new ArrayList<>();
+		return searchStudents;
+	}
 
-			String sql = "";
+	public List<Admin> studentScores(String studentMid) {
+		List<Admin> studentScores = new ArrayList<>();
 
-			Connection conn = null;
-			PreparedStatement pstmt = null;
+		// --성적 점수 없는 경우도 출력되는 경우
+		// CREATE OR REPLACE VIEW test
+		// AS
+		// SELECT oc.openCoCode, c.courseName, oc.openCoStartDate, oc.openCoCloseDate,
+		// cl.className,
+		// os.openSubCode, s.subjectName, os.openSubStartDate, os.openSubCloseDate,
+		// st.mid,t.testCode,
+		// dt.attDistribution,
+		// dt.wriDisTribution, dt.pracDistribution, t.testDate
+		// FROM openCourse_ oc, course_ c, class_ cl, openSubject_ os, subject_ s,
+		// distribution_ dt, test_ t, studentHistory_ sh, student_ st
+		// WHERE oc.courseCode = c.courseCode
+		// AND oc.classCode = cl.classCode
+		// AND sh.openCoCode = oc.openCoCode
+		// AND st.mid = sh.mid
+		// AND oc.openCoCode = os.openCoCode
+		// AND os.subjectCode = s.subjectCode
+		// AND t.openSubCode = os.openSubCode
+		// AND t.testCode = dt.testCode;
+		//
+		//
+		// --성적 없는 경우도 출력되는 경우 view
+		// CREATE OR REPLACE VIEW scoreDetailVieww
+		// AS
+		// SELECT t.openCoCode, courseName, openCoStartDate, openCoCloseDate, className,
+		// m.mid,
+		// openSubCode, subjectName, openSubStartDate, openSubCloseDate, m.name_,
+		// attDistribution, NVL(TO_CHAR(sc.attendanceScore),'-') attendanceScore,
+		// wriDisTribution, NVL(TO_CHAR(sc.writingScore),'-') writingScore
+		// ,pracDistribution,
+		// NVL(TO_CHAR(sc.practiceScore),'-') practiceScore ,testDate,
+		// NVL(TO_CHAR(attendanceScore+ writingScore+practiceScore),'-') sum
+		// FROM test t , member_ m, score_ sc
+		// WHERE t.testCode = sc.testCode(+)
+		// AND m.mid = t.mid
+		// AND t.mid = sc.mid(+)
+		// ORDER BY t.openCoCode;
+
+		// 개설과정코드 / 개설과정명 / 과정시작일 / 과정종료일 / 강의실명 / 개설과목코드 / 개설과목명 / 과목시작일 / 과목종료일 / 강사명
+		// / 출결배점 / 출결점수 / 필기배점 / 필기점수 / 실기배점 / 실기점수 / 총점 / 시험날짜 /
+
+		String sql = "SELECT openCoCode, courseName, openCoStartDate, openCoCloseDate, className,openSubCode, subjectName, openSubStartDate, openSubCloseDate, name_,attDistribution, NVL(attendanceScore, 0) f_attendanceScore, wriDisTribution, NVL(writingScore, 0) f_writingScore, pracDistribution, NVL(practiceScore,0) f_practiceScore, testDate, sum FROM scoreDetailVieww WHERE mid = ?";
+
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		try {
+			conn = SQLConnection.connect();
+			pstmt = conn.prepareStatement(sql);
+
+			pstmt.setString(1, studentMid);
+
+			ResultSet rs = pstmt.executeQuery();
+
+			while (rs.next()) {
+
+				Admin a = new Admin();
+
+				a.setOpenCoCode(rs.getString("openCoCode"));
+				a.setCourseName(rs.getString("courseName"));
+				a.setOpenCoStartDate(rs.getDate("openCoStartDate").toLocalDate());
+				a.setOpenCoCloseDate(rs.getDate("openCoCloseDate").toLocalDate());
+				a.setClassName(rs.getString("className"));
+				a.setOpenSubCode(rs.getString("openSubCode"));
+				a.setSubjectName(rs.getString("subjectName"));
+				a.setOpenSubStartDate(rs.getDate("openSubStartDate").toLocalDate());
+				a.setOpenSubCloseDate(rs.getDate("openSubCloseDate").toLocalDate());
+				a.setName_(rs.getString("name_"));
+
+				a.setAttDistribution(rs.getInt("attDistribution"));
+				a.setWriDistribution(rs.getInt("wriDistribution"));
+				a.setPracDistribution(rs.getInt("pracDistribution"));
+
+				a.setAttendanceScore(rs.getInt("f_attendanceScore"));
+				a.setWritingScore(rs.getInt("f_writingScore"));
+				a.setPracticeScore(rs.getInt("f_practiceScore"));
+
+				a.setTestDate(rs.getDate("testDate").toLocalDate());
+
+				studentScores.add(a);
+
+			}
+			rs.close();
+
+		} catch (SQLException se) {
+			se.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
 			try {
-				conn = SQLConnection.connect();
-				pstmt = conn.prepareStatement(sql);
-
-				// pstmt.setString(1, mid);
-
-				ResultSet rs = pstmt.executeQuery();
-
-				while (rs.next()) {
-
-					Admin a = new Admin();
-
-					studentScores.add(a);
-
-				}
-				rs.close();
-
+				if (pstmt != null)
+					pstmt.close();
+			} catch (SQLException se) {
+			}
+			try {
+				SQLConnection.close();
 			} catch (SQLException se) {
 				se.printStackTrace();
-			} catch (Exception e) {
-				e.printStackTrace();
-			} finally {
-				try {
-					if (pstmt != null)
-						pstmt.close();
-				} catch (SQLException se) {
-				}
-				try {
-					SQLConnection.close();
-				} catch (SQLException se) {
-					se.printStackTrace();
-				}
 			}
-
-			return studentScores;
 		}
 
+		return studentScores;
+	}
 }

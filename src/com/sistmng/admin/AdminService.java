@@ -1492,6 +1492,7 @@ public class AdminService {
 		}
 		
 		//5.4.1 수강생 과정 취소
+	
 		public void Admin_5_4_1(Scanner sc) {
 			
 			System.out.println("1.이름검색 2.전화번호");
@@ -1521,14 +1522,16 @@ public class AdminService {
 					String mid = sc.next();
 					String yn = sc.next();
 					
-					System.out.printf("[ %s / %s ] 학생의 과정을 삭제하시겠습니까?(Y/N)", mid,name_);
+					System.out.printf("[ %s / %s ] 학생의 과정을 삭제하시겠습니까?(Y/N)", mid, name_);
 					
 					if(yn.equalsIgnoreCase("y")) {
 						
-						this.dao.studentCourseDelete(mid);
-						
-						System.out.printf("[ %s / %s ] 학생의 과정이 삭제되었습니다.", mid,name_);
-						
+						int result = this.dao.studentCourseDelete(mid);
+						if(result == 0) {
+							System.out.println("정상적으로 삭제가 이루어지지 않았습니다. 다시 시도해주세요.");
+						}else {
+							System.out.printf("[ %s / %s ] 학생의 과정이 삭제되었습니다.n", mid,name_);
+						}
 					} else if (yn.equalsIgnoreCase("n")) {
 						return;
 					} else {
@@ -1578,6 +1581,7 @@ public class AdminService {
 		}
 		
 		//5.4.2 수강생 삭제
+
 		public void Admin_5_4_2(Scanner sc) {
 			
 			boolean run = true;
@@ -1615,9 +1619,12 @@ public class AdminService {
 					String yn = sc.next();
 					
 					if(yn.equalsIgnoreCase("y")) {
-						this.dao.studentDelete(mid);
-						System.out.printf("[ %s / %s ]수강생이 삭제되었습니다.", mid,name_);
-						
+						int result = this.dao.studentDelete(mid);
+						if(result == 0) {
+							System.out.println("삭제가 정상적으로 이루어지지 않았습니다. 다시 시도해주세요.");
+						}else {
+							System.out.printf("[ %s / %s ]수강생이 삭제되었습니다.", mid,name_);
+						}
 					} else if (yn.equalsIgnoreCase("n")) {
 						return;
 					} else {
@@ -1650,9 +1657,12 @@ public class AdminService {
 					String yn1 = sc.next();
 					
 					if(yn1.equalsIgnoreCase("y")) {
-						this.dao.studentDelete(mid1);
-						System.out.printf("[ %s / %s ]수강생이 삭제되었습니다.", mid1,m.getName_());
-						
+						int result = this.dao.studentDelete(mid1);
+						if(result == 0) {
+							System.out.println("삭제가 정상적으로 이루어지지 않았습니다. 다시 시도 해주세요.");
+						}else {
+							System.out.printf("[ %s / %s ]수강생이 삭제되었습니다.", mid1,m.getName_());
+						}
 					} else if (yn1.equalsIgnoreCase("n")) {
 						return;
 					} else {
@@ -1666,172 +1676,222 @@ public class AdminService {
 	
 	//-----------------------------------------------
 		
-		
 		public void menu_6(Scanner sc) {
-			boolean run = true;
+		boolean run = true;
 
-			while (run) {
-
-				System.out.println(
-						"----------------------------------------------------------------------------------------------------");
-				System.out.println("1. 개설 과정별로 보기 2.수강생별로 보기 0.나가기");
-				System.out.println(
-						"----------------------------------------------------------------------------------------------------");
-
-				int num = sc.nextInt();
-				sc.nextLine();
-
-				switch (num) {
-
-				case 0:
-					run = false;
-					break;
-				case 1:
-					this.menu_61(sc);
-					break;
-				case 2:
-					this.menu_62(sc);
-					break;
-				}
-			}
-
-		}
-
-		private void menu_61(Scanner sc) {
-
-			while (true) {
-
-				List<Admin> openCoView = this.dao.openCoView();
-
-				System.out.println(
-						"-------------------------------------------------------------------------------------------------");
-				System.out.println("개설과정코드 / 과정명 / 과정시작일 / 과정종료일 / 과목 등록 갯수 / 수강생 등록 인원 / 강의실명 ");
-				System.out.println(
-						"-------------------------------------------------------------------------------------------------");
-
-				for (Admin a : openCoView) {
-					System.out.printf("%s / %s / %s / %s / %d / %d / %s%n", a.getOpenCoCode(), a.getCourseName(),
-							a.getOpenCoStartDate(), a.getOpenSubCloseDate(), a.getCount_openSub(),
-							a.getCount_studentHistory(), a.getClassName());
-				}
-
-				System.out.println();
-
-				System.out.println("-----------------------------");
-				System.out.println("1.과정 상세보기  0.나가기");
-				System.out.println("-----------------------------");
-
-				int sn = sc.nextInt();
-				sc.nextLine();
-
-				if (sn == 0) {
-					break;
-				} else {
-					this.menu_611(sc);
-				}
-
-			}
-
-		}
-
-		private void menu_611(Scanner sc) {
-
-			while (true) {
-
-				List<Admin> openSubView = this.dao.openSubView();
-
-				System.out.println(
-						"-------------------------------------------------------------------------------------------------");
-				System.out.println("개설과목코드 / 과목명 / 과목시작일 / 과목종료일 /  강의실명 / 강사명 / 교재명 / ");
-				System.out.println(
-						"-------------------------------------------------------------------------------------------------");
-
-				for (Admin a : openSubView) {
-					System.out.printf("%s / %s / %s / %s / %s / %s / %s%n", a.getOpenSubCode(), a.getSubjectName(),
-							a.getOpenSubStartDate(), a.getOpenSubCloseDate(), a.getClassName(), a.getName_(),
-							a.getBookName());
-				}
-
-				System.out.println();
-
-				System.out.println("-----------------------------");
-				System.out.println("1.과목 상세보기  0.나가기");
-				System.out.println("-----------------------------");
-
-				int sn = sc.nextInt();
-				sc.nextLine();
-
-				if (sn == 0) {
-					break;
-				} else {
-					this.menu_6111(sc);
-				}
-
-			}
-		}
-
-		private void menu_6111(Scanner sc) {
-
-			while (true) {
-
-				List<Admin> testViewFromAdmin = this.dao.testViewFromAdmin();
-
-				System.out.println(
-						"-------------------------------------------------------------------------------------------------");
-				System.out.println("시험코드 / 시험날짜 / 시험문제 / 출석배점 / 필기배점 / 실기배점 / 성적등록인원 ");
-				System.out.println(
-						"-------------------------------------------------------------------------------------------------");
-
-				for (Admin a : testViewFromAdmin) {
-					System.out.printf("%s / %s / %d / %d / %d / %d%n", a.getTestCode(), a.getTestDate(),
-							a.getAttendanceScore(), a.getWriDistribution(), a.getPracDistribution(),
-							a.getCount_studentHistory());
-				}
-
-				System.out.println();
-
-				System.out.println("-----------------------------");
-				System.out.println("1.시험별 성적보기  0.나가기");
-				System.out.println("-----------------------------");
-
-				int sn = sc.nextInt();
-				sc.nextLine();
-
-				if (sn == 0) {
-					break;
-				} else {
-					this.menu_61111(sc);
-				}
-
-			}
-
-		}
-
-		private void menu_61111(Scanner sc) {
-
-			List<Admin> studentsScores = this.dao.studentsScores();
+		while (run) {
 
 			System.out.println(
-					"-------------------------------------------------------------------------------------------------");
-			System.out.println("회원번호 / 이름 / 출석점수 / 필기점수 / 실기점수 / 총점  ");
+					"----------------------------------------------------------------------------------------------------");
+			System.out.println("1. 개설 과정별로 보기 2.수강생별로 보기 0.나가기");
 			System.out.println(
-					"-------------------------------------------------------------------------------------------------");
+					"----------------------------------------------------------------------------------------------------");
 
-			for (Admin a : studentsScores) {
-				System.out.printf("%s / %s / %d / %d / %d / %d%n", a.getMid(), a.getName_(), a.getAttendanceScore(),
-						a.getWritingScore(), a.getPracticeScore(),
-						a.getAttendanceScore() + a.getWritingScore() + a.getPracticeScore());
+			System.out.print("선택 > ");
+
+			int num = sc.nextInt();
+			sc.nextLine();
+
+			switch (num) {
+
+			case 0:
+				run = false;
+				break;
+			case 1:
+				this.menu_61(sc);
+				break;
+			case 2:
+				this.menu_62(sc);
+				break;
 			}
-
 		}
 
-		private void menu_62(Scanner sc) {
+	}
 
-			System.out.print("성적을 검색할 수강생의 이름을 입력해주세요 > ");
+	private void menu_61(Scanner sc) {
 
-			String student_name = sc.nextLine();
+		// while (true) {
 
-			List<Admin> students = this.dao.searchStudents(student_name);
+		List<Admin> openCoView = this.dao.openCoView();
+
+		System.out.println(
+				"-------------------------------------------------------------------------------------------------");
+		System.out.println("개설과정코드 / 과정명 / 과정시작일 / 과정종료일 / 과목 등록 갯수 / 수강생 등록 인원 / 강의실명 ");
+		System.out.println(
+				"-------------------------------------------------------------------------------------------------");
+
+		for (Admin a : openCoView) {
+			System.out.printf("%s / %s / %s / %s / %d / %d / %s%n", a.getOpenCoCode(), a.getCourseName(),
+					a.getOpenCoStartDate(), a.getOpenCoCloseDate(), a.getCount_openSub(), a.getCount_studentHistory(),
+					a.getClassName());
+		}
+
+		System.out.println();
+
+		System.out.print("개설과정코드 > ");
+
+		String openCoCode = sc.nextLine();
+
+		this.menu_611(sc, openCoCode);
+
+		// System.out.println("-----------------------------");
+		// System.out.println("1.과정 상세보기 0.나가기");
+		// System.out.println("-----------------------------");
+		//
+		// System.out.print("선택 > ");
+		//
+		// int sn = sc.nextInt();
+		// sc.nextLine();
+		//
+		// if (sn == 0) {
+		// break;
+		// } else {
+		// this.menu_611(sc);
+		// }
+		//
+		// }
+
+	}
+
+	private void menu_611(Scanner sc, String openCoCode) {
+
+		// while (true) {
+
+		// System.out.print("개설과정코드 > ");
+		//
+		// String openCoCode = sc.nextLine();
+
+		List<Admin> openSubView = this.dao.openSubView(openCoCode);
+
+		System.out.println(
+				"-------------------------------------------------------------------------------------------------");
+		System.out.println("개설과목코드 / 과목명 / 과목시작일 / 과목종료일 / 강사명 / 교재명 / ");
+		System.out.println(
+				"-------------------------------------------------------------------------------------------------");
+
+		for (Admin a : openSubView) {
+			System.out.printf("%s / %s / %s / %s / %s / %s%n", a.getOpenSubCode(), a.getSubjectName(),
+					a.getOpenSubStartDate(), a.getOpenSubCloseDate(), a.getName_(), a.getBookName());
+		}
+
+		System.out.println();
+
+		System.out.print("개설과목코드 > ");
+
+		String openSubCode = sc.nextLine();
+
+		this.menu_6111(sc, openSubCode);
+
+		// System.out.println("-----------------------------");
+		// System.out.println("1.과목 상세보기 0.나가기");
+		// System.out.println("-----------------------------");
+		//
+		// System.out.print("선택 > ");
+		//
+		// int sn = sc.nextInt();
+		// sc.nextLine();
+		//
+		// if (sn == 0) {
+		// break;
+		// } else {
+		// this.menu_6111(sc);
+		// }
+		//
+		// }
+	}
+
+	private void menu_6111(Scanner sc, String openSubCode) {
+
+		// System.out.print("개설과목코드 > ");
+		//
+		// String openSubCode = sc.nextLine();
+
+		List<Admin> testViewFromAdmin = this.dao.testViewFromAdmin(openSubCode);
+
+		System.out.println(
+				"-------------------------------------------------------------------------------------------------");
+		System.out.println("시험코드 / 시험날짜 / 시험문제 / 출석배점 / 필기배점 / 실기배점 / 성적등록인원 ");
+		System.out.println(
+				"-------------------------------------------------------------------------------------------------");
+
+		for (Admin a : testViewFromAdmin) {
+			System.out.printf("%s / %s / %d / %d / %d / %d%n", a.getTestCode(), a.getTestDate(), a.getAttDistribution(),
+					a.getWriDistribution(), a.getPracDistribution(), a.getCount_studentHistory());
+		}
+
+		System.out.println();
+		System.out.print("시험코드 > ");
+
+		String testCode = sc.nextLine();
+
+		this.menu_61111(sc, testCode);
+
+		// System.out.println();
+		//
+		// System.out.println("-----------------------------");
+		// System.out.println("1.시험별 성적보기 0.나가기");
+		// System.out.println("-----------------------------");
+		//
+		// System.out.print("선택 > ");
+		// int sn = sc.nextInt();
+		// sc.nextLine();
+		//
+		// if (sn == 0) {
+		// break;
+		// } else {
+		// this.menu_61111(sc);
+		// }
+
+	}
+
+	private void menu_61111(Scanner sc, String testCode) {
+
+		// System.out.print("시험코드 > ");
+		//
+		// String testCode = sc.nextLine();
+
+		List<Admin> studentsScores = this.dao.studentsScores(testCode);
+
+		System.out.println(
+				"-------------------------------------------------------------------------------------------------");
+		System.out.println("회원번호 / 이름 / 출석점수 / 필기점수 / 실기점수 / 총점  ");
+		System.out.println(
+				"-------------------------------------------------------------------------------------------------");
+
+		for (Admin a : studentsScores) {
+			System.out.printf("%s / %s / %d / %d / %d / %d%n", a.getMid(), a.getName_(), a.getAttendanceScore(),
+					a.getWritingScore(), a.getPracticeScore(),
+					a.getAttendanceScore() + a.getWritingScore() + a.getPracticeScore());
+		}
+
+		System.out.println();
+
+		// System.out.println("----------------------------------");
+		// System.out.println("1.다른 시험 성적보기 0. 나가기");
+		// System.out.println("----------------------------------");
+		//
+		// System.out.print("선택 > ");
+		//
+		// int sn = sc.nextInt();
+		// sc.nextLine();
+		// if (sn == 0)
+		// break;
+
+	}
+
+	private void menu_62(Scanner sc) {
+
+		System.out.println();
+
+		System.out.print("수강생 이름 > ");
+
+		String studentName = sc.nextLine();
+
+		List<Admin> students = this.dao.searchStudents(studentName);
+
+		if (students == null) {
+			System.out.printf("[%s] 수강생을 찾을 수 없습니다.", studentName);
+		} else {
 
 			System.out.println("-------------------------------------------------------");
 			System.out.println("회원번호 / 이름 / 주민번호 / 전화번호 / 회원 등록일");
@@ -1842,28 +1902,42 @@ public class AdminService {
 						s.getSstudentRegDate());
 			}
 
-			System.out.print("성적을 검색할 수강생의 회원번호를 입력해주세요 > ");
+			System.out.println();
+			System.out.print("수강생 번호 > ");
 
-			String student_mid = sc.nextLine();
+			String studentMid = sc.nextLine();
 
-			this.menu_621(sc, student_mid);
-
+			this.menu_621(studentMid);
 		}
 
-		private void menu_621(Scanner sc, String student_mid) {
+	}
 
-			List<Admin> studentScores = this.dao.studentScores(student_mid);
+	private void menu_621(String studentMid) {
 
-			System.out.println(
-					"----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
-			System.out.println(
-					"개설과정코드 / 개설과정명 / 과정시작일 / 과정종료일 / 강의실명 / 개설과목코드 / 개설과목명 / 과목시작일 / 과목종료일 / 강사명 / 출결배점 / 출결점수 / 필기배점 / 필기점수 / 실기배점 / 실기점수 / 총점 / 시험날짜 /");
-			System.out.println(
-					"----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+		List<Admin> studentScores = this.dao.studentScores(studentMid);
 
-			for (Admin ss : studentScores) {
+		System.out.println(
+				"----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+		System.out.println(
+				"개설과정코드 / 개설과정명 / 과정시작일 / 과정종료일 / 강의실명 / 개설과목코드 / 개설과목명 / 과목시작일 / 과목종료일 / 강사명 / 출결배점 / 출결점수 / 필기배점 / 필기점수 / 실기배점 / 실기점수 / 총점 / 시험날짜");
+		System.out.println(
+				"----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+
+		for (Admin ss : studentScores) {
+
+			if (ss.getAttendanceScore() == 0 && ss.getWritingScore() == 0 && ss.getPracticeScore() == 00) {
 				System.out.printf(
 						"%s / %s / %s / %s / %s / %s / %s / %s / %s / %s / %s / %s / %s / %s / %s / %s / %s / %s%n",
+						ss.getOpenCoCode(), ss.getCourseName(), ss.getOpenCoStartDate(), ss.getOpenCoCloseDate(),
+						ss.getClassName(), ss.getOpenSubCode(), ss.getSubjectName(), ss.getOpenSubStartDate(),
+						ss.getOpenSubCloseDate(), ss.getName_(), ss.getAttDistribution(), "-", ss.getWriDistribution(),
+						"-", ss.getPracDistribution(), "-",
+						ss.getAttendanceScore() + ss.getWritingScore() + ss.getPracticeScore(), ss.getTestDate());
+
+			} else {
+
+				System.out.printf(
+						"%s / %s / %s / %s / %s / %s / %s / %s / %s / %s / %d / %d / %d / %d / %d / %d / %d / %s%n",
 						ss.getOpenCoCode(), ss.getCourseName(), ss.getOpenCoStartDate(), ss.getOpenCoCloseDate(),
 						ss.getClassName(), ss.getOpenSubCode(), ss.getSubjectName(), ss.getOpenSubStartDate(),
 						ss.getOpenSubCloseDate(), ss.getName_(), ss.getAttDistribution(), ss.getAttendanceScore(),
@@ -1873,8 +1947,8 @@ public class AdminService {
 
 		}
 
-		// 6.2 수강생 검색
-		// 6.2.1 상세보기 (과정)
-		// 6.2.1.1 상세보기(과목)
-	
+		System.out.println();
+
+	}
+
 }
