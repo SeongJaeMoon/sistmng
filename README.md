@@ -1,8 +1,5 @@
-# 쌍용교육센터 
-## Java&Python 기반 응용SW개발자 양성과정
-### 2차 콘솔 프로젝트 Oracle 데이터베이스를 활용한 JDBC 성적 관리 프로그램  
+ ### 2차 콘솔 프로젝트 Oracle 데이터베이스를 활용한 JDBC 성적 관리 프로그램  
 
-- 기간 : 2018/02/01 ~ 2018/02/23 (설 연휴 휴강)
 - 환경 : 콘솔 기반
 - 주제 : 성적 관리 프로그램 (수강생, 관리자, 강사)
 - 기술 : JavaSE , OOP, Collection, Generic, JDBC, Oracle, sqldeveloper 
